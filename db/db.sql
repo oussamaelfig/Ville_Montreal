@@ -6,7 +6,7 @@ CREATE TABLE poursuite
     description   TEXT,
     adresse       VARCHAR(200),
     date_jugement TEXT,
-    etablissement varchar(100),
+    etablissement viarchar(100),
     montant       INTEGER,
     proprietaire  varchar(100),
     ville         varchar(50),
