@@ -8,7 +8,7 @@ url = 'https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0' \
 response = requests.get(url)
 
 # Parse the CSV data
-poursuites = csv.DictReader(response.text.splitlines())
+poursuites = csv.DictReader(response.content.decode('utf-8').splitlines())
 
 # Connect to the database
 conn = sqlite3.connect('db/db')

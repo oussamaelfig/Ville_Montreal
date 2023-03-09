@@ -6,12 +6,12 @@ CREATE TABLE poursuite
     description   TEXT,
     adresse       VARCHAR(200),
     date_jugement TEXT,
-    etablissement viarchar(100),
+    etablissement VARCHAR(100),
     montant       INTEGER,
-    proprietaire  varchar(100),
-    ville         varchar(50),
-    statut        varchar(50),
+    proprietaire  VARCHAR(100),
+    ville         VARCHAR(50),
+    statut        VARCHAR(50),
     date_statut   TEXT,
-    categorie     varchar(100)
+    categorie     VARCHAR(100)
 
 );
