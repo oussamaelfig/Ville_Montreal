@@ -51,7 +51,8 @@ def search():
     conn.close()
 
     # Display search results
-    return render_template('results.html', results=results, len=len(errors))
+    return render_template('results.html', results=results,
+                           num_results=len(results))
 
 
 if __name__ == '__main__':
