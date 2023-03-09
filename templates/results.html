@@ -4,17 +4,23 @@
     <div class="container mt-5">
         <h1 class="mb-4">Results</h1>
         {% if results %}
-            <p class="mb-4">{{ errors_len }} errors.</p>
-            <p class="mb-4">{{ num_results }} results found.</p>
-            <table class="table table-striped">
+            <p class="mb-4">{{ num_results }} résultat(s) trouvé.</p>
+            <table class="table table-striped pr-3">
                 <thead>
                 <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Address</th>
-                    <th scope="col">Latitude</th>
-                    <th scope="col">Longitude</th>
+                    <th scope="col">ID Poursuite</th>
+                    <th scope="col">Buisness ID</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Date Jugement</th>
+                    <th scope="col">Etablissement</th>
+                    <th scope="col">Montant</th>
+                    <th scope="col">Proprietaire</th>
+                    <th scope="col">Ville</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Date statut</th>
+                    <th scope="col">Categorie</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -26,12 +32,19 @@
                         <td>{{ result[3] }}</td>
                         <td>{{ result[4] }}</td>
                         <td>{{ result[5] }}</td>
+                        <td>{{ result[6] }}</td>
+                        <td>{{ result[7] }}</td>
+                        <td>{{ result[8] }}</td>
+                        <td>{{ result[9] }}</td>
+                        <td>{{ result[10] }}</td>
+                        <td>{{ result[11] }}</td>
+                        <td>{{ result[12] }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p class="mb-4">No results found.</p>
+            <p class="mb-4">Auncun résultat n'a été trouvé</p>
         {% endif %}
     </div>
 {% endblock %}
