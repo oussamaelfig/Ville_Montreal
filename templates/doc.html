@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation{% endblock %}
+
+{% block content %}
+
+    <div class="jumbotron">
+        <h1 class="display-4">API Documentation</h1>
+        <p class="lead">This is the documentation for the InspectionMTL
+            API.</p>
+    </div>
+
+    <h2>Search API</h2>
+    <p>The Search API allows you to search for contrevenants based on the
+        following criteria:</p>
+    <ul>
+        <li><code>etablissement</code> - Name of establishment</li>
+        <li><code>proprietaire</code> - Name of owner</li>
+        <li><code>rue</code> - Street name</li>
+    </ul>
+    <p>To use the Search API, send a <code>POST</code> request to
+        <code>/search</code> with the following parameters:</p>
+    <ul>
+        <li><code>etablissement</code> (optional) - Name of establishment to
+            search for
+        </li>
+        <li><code>proprietaire</code> (optional) - Name of owner to search for
+        </li>
+        <li><code>rue</code> (optional) - Street name to search for</li>
+    </ul>
+
+    <h2>Contrevenants API</h2>
+    <p>The Contrevenants API allows you to retrieve a list of contrevenants who
+        committed an infraction between two dates.</p>
+    <p>To use the Contrevenants API, send a <code>GET</code> request to <code>/contrevenants</code>
+        with the following parameters:</p>
+    <ul>
+        <li><code>du</code> - Start date (ISO 8601 format)</li>
+        <li><code>au</code> - End date (ISO 8601 format)</li>
+    </ul>
+
+{% endblock %}
