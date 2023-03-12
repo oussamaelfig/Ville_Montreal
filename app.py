@@ -1,5 +1,6 @@
 import datetime
-from flask import Flask, render_template, request, jsonify
+import json
+from flask import Flask, render_template, request, jsonify, Response
 import sqlite3
 
 app = Flask(__name__)
@@ -83,7 +84,7 @@ def get_contrevenants_between_dates():
     # Return results in JSON format
     contrevenants = []
     for row in results:
-        offender = {
+        contrev = {
             'id_poursuite': row[0],
             'buisness_id': row[1],
             'date': row[2],
@@ -98,8 +99,9 @@ def get_contrevenants_between_dates():
             'date_statut': row[11],
             'categorie': row[12]
         }
-        contrevenants.append(offender)
-    return jsonify(contrevenants)
+        contrevenants.append(contrev)
+    return Response(json.dumps(contrevenants, indent=4),
+                    mimetype='application/json')
 
 
 @app.route('/doc')
@@ -107,6 +109,34 @@ def doc():
     with open('api.raml', 'r') as f:
         raml = f.read()
     return render_template('doc.html', raml=raml)
+
+
+@app.route('/infractions')
+def get_infractions():
+    # Retrieve data from database
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+    query = """
+        SELECT etablissement, COUNT(*) AS nb_infractions
+        FROM poursuite
+        GROUP BY etablissement
+        ORDER BY nb_infractions DESC
+    """
+    c.execute(query)
+    results = c.fetchall()
+    conn.close()
+
+    # Transform data into JSON format
+    infractions = []
+    for row in results:
+        infraction = {
+            'etablissement': row[0],
+            'nb_infractions': row[1]
+        }
+        infractions.append(infraction)
+
+    return Response(json.dumps(infractions, indent=4),
+                    mimetype='application/json')
 
 
 if __name__ == '__main__':
