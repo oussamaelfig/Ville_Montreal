@@ -1,6 +1,8 @@
 import datetime
 import json
+import csv
 from flask import Flask, render_template, request, jsonify, Response
+from xml.etree.ElementTree import Element, SubElement, tostring
 import sqlite3
 
 app = Flask(__name__)
@@ -100,7 +102,7 @@ def get_contrevenants_between_dates():
             'categorie': row[12]
         }
         contrevenants.append(contrev)
-    return Response(json.dumps(contrevenants, indent=4),
+    return Response(json.dumps(contrevenants, indent=4, ensure_ascii=False),
                     mimetype='application/json')
 
 
@@ -135,8 +137,64 @@ def get_infractions():
         }
         infractions.append(infraction)
 
-    return Response(json.dumps(infractions, indent=4),
+    return Response(json.dumps(infractions, indent=4, ensure_ascii=False),
                     mimetype='application/json')
+
+
+@app.route('/infractions_par_etablissement_xml')
+def get_infractions_by_establishment_xml():
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+
+    query = '''
+        SELECT etablissement, COUNT(*) AS nb_infractions 
+        FROM poursuite
+        GROUP BY etablissement
+        ORDER BY nb_infractions DESC
+    '''
+    c.execute(query)
+    results = c.fetchall()
+    conn.close()
+
+    # Build XML response
+    root = Element('etablissements')
+    for row in results:
+        etablissement = SubElement(root, 'etablissement',
+                                   nb_infractions=str(row[1]))
+        etablissement.text = row[0]
+
+    return app.response_class(
+        response=tostring(root),
+        status=200,
+        mimetype='application/xml')
+
+
+@app.route('/etablissements-infractions.csv')
+def get_etablissements_infractions_csv():
+    # Retrieve data from database
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+    query = '''
+        SELECT etablissement, COUNT(*) as nb_infractions
+        FROM poursuite
+        GROUP BY etablissement
+        ORDER BY nb_infractions DESC
+    '''
+    c.execute(query)
+    results = c.fetchall()
+    conn.close()
+
+    # Generate CSV file
+    output = "Etablissement,Nombre d'infractions\n"
+    for row in results:
+        output += f"{row[0]},{row[1]}\n"
+
+    # Return CSV response
+    response = Response(output, mimetype='text/csv')
+    response.headers[
+        "Content-Disposition"] = "attachment; filename=etablissements" \
+                                 "-infractions.csv"
+    return response
 
 
 if __name__ == '__main__':

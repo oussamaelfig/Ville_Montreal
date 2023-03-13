@@ -1,0 +1,107 @@
+#%RAML 1.0
+title: Documentation
+mediaType: application/json
+types:
+  ExistingContrevenants:
+    properties:
+      adresse: 
+        type: string
+        required: true
+      business_id:
+        type: string
+        required: true
+      categorie:
+        type: string
+        required: true
+      date:
+        type: string
+        required: true 
+      date_jugement:
+        type: string
+        required: true
+      date_statut:
+        type: string
+        required: true
+      description: 
+        type: string
+        required: true
+      etablissement: 
+        type: string
+        required: true
+      id_poursuite:
+        type: string
+        required: true
+      montant: 
+        type: string
+        required: true
+      proprietaire:
+        type: string
+        required: true
+      statut: 
+        type: string
+        required: true
+      ville:
+        type: string
+        required: true
+
+  ExistingListEtablissement:
+    properties:
+      Etablissement: 
+        type: string
+        required: true
+      Nombre_Infraction:
+        type: string
+        required: true
+
+/api:
+  /contrevenants?du=date_debut&au=date_fin:
+    get:
+      description: Permet d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates spécifiées en paramètre.
+      responses:
+        200:
+          body:
+            application/json:
+              type: ExistingContrevenants[]
+  /infractions/etablissements/json:
+    get:
+      description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format JSON.
+      responses:
+        200:
+          body:
+            application/json:
+              type: ExistingListEtablissement[]
+  /infractions/etablissements/xml:
+    get:
+      description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format XML
+      responses:
+        200:
+          body:
+            application/xml:
+              example: |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <etablissements>
+                  <etablissement>
+                    <nom>Etablissement 1</nom>
+                    <nbInfractions>10</nbInfractions>
+                  </etablissement>
+                  <etablissement>
+                    <nom>Etablissement 2</nom>
+                    <nbInfractions>5</nbInfractions>
+                  </etablissement>
+                </etablissements>
+  /infractions/etablissements/csv:
+      get:
+        description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format CSV
+        responses:
+          200:
+            body:
+              text/csv:
+                example: |
+                  Etablissement,Nombre d'infractions
+                  McDonald's,25
+                  Burger King,20
+                  Wendy's,18
+                  KFC,15
+                  Subway,12
+
+
