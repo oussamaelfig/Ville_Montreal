@@ -1,0 +1,5 @@
+from_email: "elfidev2123@gmail.com"
+to_email: "elfidev2123@gmail.com"
+smtp_server: "smtp.gmail.com"
+smtp_port: 465
+email_password: "Admin@2023"

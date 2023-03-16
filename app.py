@@ -77,7 +77,9 @@ def get_contrevenants_between_dates():
     # Retrieve data from database
     conn = sqlite3.connect('db/db')
     c = conn.cursor()
-    query = "SELECT * FROM poursuite WHERE date >= ? AND date <= ?"
+    query = """SELECT etablissement, COUNT(*) as nb_contraventions
+        FROM poursuite WHERE date >= ? AND date <= ?
+        GROUP BY etablissement"""
     params = [start_date, end_date]
     c.execute(query, params)
     results = c.fetchall()
@@ -87,19 +89,8 @@ def get_contrevenants_between_dates():
     contrevenants = []
     for row in results:
         contrev = {
-            'id_poursuite': row[0],
-            'buisness_id': row[1],
-            'date': row[2],
-            'description': row[3],
-            'adresse': row[4],
-            'date_jugement': row[5],
-            'etablissement': row[6],
-            'montant': row[7],
-            'proprietaire': row[8],
-            'ville': row[9],
-            'statut': row[10],
-            'date_statut': row[11],
-            'categorie': row[12]
+            'etablissement': row[0],
+            'nb_contraventions': row[1]
         }
         contrevenants.append(contrev)
     return Response(json.dumps(contrevenants, indent=4, ensure_ascii=False),
@@ -108,7 +99,7 @@ def get_contrevenants_between_dates():
 
 @app.route('/doc')
 def doc():
-    with open('api.raml', 'r') as f:
+    with open('doc.raml', 'r') as f:
         raml = f.read()
     return render_template('doc.html', raml=raml)
 
@@ -195,6 +186,33 @@ def get_etablissements_infractions_csv():
         "Content-Disposition"] = "attachment; filename=etablissements" \
                                  "-infractions.csv"
     return response
+
+
+@app.route('/contrevenants-liste')
+def contrevenants_liste():
+    return render_template('contrevenants.html')
+
+
+@app.route('/api/etablissements')
+def api_etablissements():
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+    c.execute(
+        "SELECT DISTINCT etablissement FROM poursuite ORDER BY etablissement")
+    results = c.fetchall()
+    conn.close()
+    return jsonify([row[0] for row in results])
+
+
+@app.route('/api/infractions/<etablissement>')
+def api_infractions(etablissement):
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM poursuite WHERE etablissement = ?",
+              (etablissement,))
+    results = c.fetchall()
+    conn.close()
+    return jsonify(results)
 
 
 if __name__ == '__main__':

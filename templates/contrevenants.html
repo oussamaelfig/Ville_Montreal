@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Recherche d'infractions par établissement</h1>
+    <div class="form-group">
+        <label for="etablissement-select">Sélectionnez un établissement
+            :</label>
+        <select class="form-control" id="etablissement-select">
+            <!-- Les options seront générées dynamiquement avec JavaScript -->
+        </select>
+    </div>
+    <button class="btn btn-primary" id="search-button">Rechercher</button>
+    <hr>
+    <div id="result"></div>
+    {% block extra_js %}
+        <script src="{{ url_for('static', filename='JS/contrevenants.js') }}"></script>
+    {% endblock %}
+{% endblock %}

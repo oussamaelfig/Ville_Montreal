@@ -13,5 +13,4 @@ CREATE TABLE poursuite
     statut        VARCHAR(50),
     date_statut   TEXT,
     categorie     VARCHAR(100)
-
 );

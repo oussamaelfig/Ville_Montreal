@@ -1,0 +1,70 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.jumbotron {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Add padding to table cells */
+table.dataTable tbody td {
+    padding: 12px 8px;
+}
+
+/* Style table header */
+table.dataTable thead th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 8px;
+}
+
+/* Style table rows with alternating background colors */
+table.dataTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table.dataTable tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+/* Style the pagination controls */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    margin-left: 2px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
+/* Footer styles */
+footer {
+    padding: 20px 0;
+    position: relative;
+}
+
+footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.date-column {
+    width: 120px;
+}
+
