@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer un profil utilisateur{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Emplacement pour le logo -->
+                        <div class="text-center mb-3">
+                            <img src="static/Images/logo_GIF.gif"
+                                 alt="GIF" class="img-fluid">
+                        </div>
+                        <h1 class="card-title">Créer un profil utilisateur</h1>
+                        <form id="create-user-form">
+                            <div class="form-group">
+                                <label for="username">Nom complet</label>
+                                <input type="text" class="form-control"
+                                       id="username"
+                                       placeholder="Entrez votre nom d'utilisateur">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Adresse e-mail</label>
+                                <input type="email" class="form-control"
+                                       id="email"
+                                       placeholder="Entrez votre adresse e-mail">
+                            </div>
+                            <div class="form-group">
+                                <label for="etablissements-surveilles">Établissements
+                                    à surveiller
+                                    (séparés par des virgules)</label>
+                                <input type="text" class="form-control"
+                                       id="etablissements-surveilles"
+                                       placeholder="Entrez les établissements à surveiller">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Mot de passe</label>
+                                <input type="password" class="form-control"
+                                       id="password"
+                                       placeholder="Entrez votre mot de passe">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm_password">Confirmez le mot
+                                    de passe</label>
+                                <input type="password" class="form-control"
+                                       id="confirm_password"
+                                       placeholder="Confirmez votre mot de passe">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Créer
+                                un profil
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#create-user-form').submit(function (event) {
+            event.preventDefault();
+
+            const username = $('#username').val();
+            const email = $('#email').val();
+            const password = $('#password').val();
+            const confirmPassword = $('#confirm_password').val();
+            const etablissementsSurveilles = $('#etablissements-surveilles').val().split(',').map(e => e.trim());
+
+            if (password !== confirmPassword) {
+                alert("Les mots de passe ne correspondent pas.");
+                return;
+            }
+
+            const userData = {
+                "nom_complet": username,
+                "email": email,
+                "mot_de_passe": password,
+                "etablissements_surveilles": etablissementsSurveilles
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/api/utilisateurs",
+                contentType: "application/json",
+                data: JSON.stringify(userData),
+                dataType: "json",
+                success: function (response) {
+                    alert("Utilisateur créé avec succès !");
+                    window.location.href = '/';
+                },
+                error: function (response) {
+                    alert("Erreur lors de la création de l'utilisateur : " + response.responseJSON.erreur);
+                }
+            });
+        });
+    </script>
+{% endblock %}

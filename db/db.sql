@@ -14,3 +14,13 @@ CREATE TABLE poursuite
     date_statut   TEXT,
     categorie     VARCHAR(100)
 );
+
+
+CREATE TABLE utilisateurs
+(
+    id                        INTEGER PRIMARY KEY,
+    nom_complet               TEXT        NOT NULL,
+    email                     TEXT UNIQUE NOT NULL,
+    etablissements_surveilles TEXT,
+    mot_de_passe              TEXT        NOT NULL
+);

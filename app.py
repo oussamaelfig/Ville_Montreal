@@ -1,9 +1,14 @@
-import datetime
 import json
 import csv
+import logging
+import uuid
+import datetime
 from flask import Flask, render_template, request, jsonify, Response
 from xml.etree.ElementTree import Element, SubElement, tostring
 import sqlite3
+import hashlib
+from jsonschema import validate, ValidationError
+from jsonschema.exceptions import SchemaError
 
 app = Flask(__name__)
 
@@ -11,6 +16,11 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+# def format_date(date_string):
+#     date_obj = datetime.strptime(date_string, "%Y%m%d")
+#     return date_obj.strftime("%Y-%m-%d")
 
 
 @app.route('/search', methods=['POST'])
@@ -213,6 +223,59 @@ def api_infractions(etablissement):
     results = c.fetchall()
     conn.close()
     return jsonify(results)
+
+
+@app.route('/api/utilisateurs', methods=['POST'])
+def creer_utilisateur():
+    # JSON Schema pour valider le document JSON reçu
+    schema = {
+        "type": "object",
+        "properties": {
+            "nom_complet": {"type": "string"},
+            "email": {"type": "string", "format": "email"},
+            "etablissements_surveilles": {"type": "array",
+                                          "items": {"type": "string"}},
+            "mot_de_passe": {"type": "string", "minLength": 8}
+        },
+        "required": ["nom_complet", "email", "mot_de_passe"]
+    }
+
+    try:
+        # Valider le JSON reçu
+        validate(instance=request.json, schema=schema)
+
+        # Hasher le mot de passe
+        mot_de_passe_hashe = hashlib.sha256(
+            request.json['mot_de_passe'].encode('utf-8')).hexdigest()
+
+        # Insérer l'utilisateur dans la base de données
+        conn = sqlite3.connect('db/db')
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO utilisateurs (nom_complet, email, etablissements_surveilles, mot_de_passe)
+            VALUES (?, ?, ?, ?)
+        """, (request.json['nom_complet'], request.json['email'],
+              json.dumps(request.json.get('etablissements_surveilles', [])),
+              mot_de_passe_hashe))
+        conn.commit()
+        conn.close()
+
+        # Retourner un message de succès
+        return jsonify({"message": "Utilisateur créé avec succès"}), 201
+
+    except ValidationError as e:
+        return jsonify({"erreur": str(e)}), 400
+    except SchemaError as e:
+        return jsonify({"erreur": str(e)}), 400
+    except sqlite3.IntegrityError as e:
+        return jsonify({"erreur": "L'adresse e-mail est déjà utilisée"}), 400
+    except Exception as e:
+        return jsonify({"erreur": str(e)}), 500
+
+
+@app.route('/create-user-profile')
+def create_user_profile():
+    return render_template('create_user_profile.html')
 
 
 if __name__ == '__main__':
