@@ -22,5 +22,6 @@ CREATE TABLE utilisateurs
     nom_complet               TEXT        NOT NULL,
     email                     TEXT UNIQUE NOT NULL,
     etablissements_surveilles TEXT,
-    mot_de_passe              TEXT        NOT NULL
+    mot_de_passe              TEXT        NOT NULL,
+    photo_de_profil           BLOB
 );

@@ -9,7 +9,7 @@ from jsonschema import validate, ValidationError
 from jsonschema.exceptions import SchemaError
 from flask_login import LoginManager, login_user, logout_user, login_required, \
     current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'mP01FxJ0fV0bwQq0nXdlPx0kVxryWBoK'
@@ -19,16 +19,24 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+ALLOWED_EXTENSIONS = {'jpg', 'png'}
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[
+        1].lower() in ALLOWED_EXTENSIONS
+
 
 # Créez une classe pour représenter l'utilisateur
 class User:
     def __init__(self, id, nom_complet, email, etablissements_surveilles,
-                 mot_de_passe):
+                 mot_de_passe, photo_de_profil=None):
         self.id = id
         self.nom_complet = nom_complet
         self.email = email
         self.etablissements_surveilles = etablissements_surveilles
         self.mot_de_passe = mot_de_passe
+        self.photo_de_profil = photo_de_profil
 
     def is_authenticated(self):
         return True
@@ -43,7 +51,8 @@ class User:
         return str(self.id)
 
 
-# Ajoutez cette fonction pour charger un utilisateur à partir de la base de données
+# Ajoutez cette fonction pour charger un utilisateur à partir de la base de
+# données
 @login_manager.user_loader
 def load_user(user_id):
     conn = sqlite3.connect('db/db')
@@ -381,6 +390,35 @@ def edit_etablissements():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+
+@app.route('/upload_photo', methods=['GET', 'POST'])
+@login_required
+def upload_photo():
+    if request.method == 'POST':
+        if 'photo' not in request.files:
+            flash('Aucun fichier n\'a été sélectionné', 'danger')
+            return redirect(request.url)
+        file = request.files['photo']
+        if file.filename == '':
+            flash('Aucun fichier n\'a été sélectionné', 'danger')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_content = file.read()
+            conn = sqlite3.connect('db/db')
+            c = conn.cursor()
+            c.execute(
+                "UPDATE utilisateurs SET photo_de_profil = ? WHERE id = ?",
+                (file_content, current_user.id))
+            conn.commit()
+            conn.close()
+            flash('Photo de profil téléversée avec succès', 'success')
+            return redirect(url_for('upload_photo'))
+        else:
+            flash('Format de fichier non autorisé', 'danger')
+            return redirect(request.url)
+    return render_template('upload_photo.html')
 
 
 if __name__ == '__main__':
