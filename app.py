@@ -1,26 +1,66 @@
 import json
-import csv
-import logging
-import uuid
 import datetime
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, redirect, \
+    flash, url_for
 from xml.etree.ElementTree import Element, SubElement, tostring
 import sqlite3
 import hashlib
 from jsonschema import validate, ValidationError
 from jsonschema.exceptions import SchemaError
+from flask_login import LoginManager, login_user, logout_user, login_required, \
+    current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = 'mP01FxJ0fV0bwQq0nXdlPx0kVxryWBoK'
+
+# Ajoutez ces lignes après la création de l'objet app
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+
+# Créez une classe pour représenter l'utilisateur
+class User:
+    def __init__(self, id, nom_complet, email, etablissements_surveilles,
+                 mot_de_passe):
+        self.id = id
+        self.nom_complet = nom_complet
+        self.email = email
+        self.etablissements_surveilles = etablissements_surveilles
+        self.mot_de_passe = mot_de_passe
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
+
+# Ajoutez cette fonction pour charger un utilisateur à partir de la base de données
+@login_manager.user_loader
+def load_user(user_id):
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM utilisateurs WHERE id = ?", (user_id,))
+    user_data = c.fetchone()
+    conn.close()
+
+    if user_data:
+        return User(*user_data)
+    else:
+        return None
 
 
 @app.route('/')
 def home():
     return render_template('home.html')
-
-
-# def format_date(date_string):
-#     date_obj = datetime.strptime(date_string, "%Y%m%d")
-#     return date_obj.strftime("%Y-%m-%d")
 
 
 @app.route('/search', methods=['POST'])
@@ -276,6 +316,43 @@ def creer_utilisateur():
 @app.route('/create-user-profile')
 def create_user_profile():
     return render_template('create_user_profile.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        conn = sqlite3.connect('db/db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM utilisateurs WHERE email = ?", (email,))
+        user_data = c.fetchone()
+        conn.close()
+
+        print("Le mot de passe hache est : " + hashlib.sha256(
+            password.encode('utf-8')).hexdigest() + "\n")
+        print("Le mot de passe hache est (user_data[4]) :" +
+              user_data + "\n")
+
+        if user_data and hashlib.sha256(
+                password.encode('utf-8')).hexdigest() == user_data[4]:
+            user = User(*user_data)
+            login_user(user)
+            return redirect(url_for('edit_etablissements'))
+        else:
+            return render_template('login.html',
+                                   error="Adresse e-mail ou mot de passe "
+                                         "incorrect.")
+
+    return render_template('login.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
