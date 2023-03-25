@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier établissements surveillés{% endblock %}
+
+{% block content %}
+    <h1>Modifier établissements surveillés</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="etablissements">Établissements à surveiller (séparés
+                par des virgules)</label>
+            <textarea class="form-control" id="etablissements"
+                      name="etablissements"
+                      rows="5">{{ etablissements }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+{% endblock %}

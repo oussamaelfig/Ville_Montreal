@@ -330,11 +330,6 @@ def login():
         user_data = c.fetchone()
         conn.close()
 
-        print("Le mot de passe hache est : " + hashlib.sha256(
-            password.encode('utf-8')).hexdigest() + "\n")
-        print("Le mot de passe hache est (user_data[4]) :" +
-              user_data + "\n")
-
         if user_data and hashlib.sha256(
                 password.encode('utf-8')).hexdigest() == user_data[4]:
             user = User(*user_data)
@@ -346,6 +341,39 @@ def login():
                                          "incorrect.")
 
     return render_template('login.html')
+
+
+@app.route('/edit_etablissements', methods=['GET', 'POST'])
+def edit_etablissements():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        etablissements = request.form.get('etablissements')
+
+        conn = sqlite3.connect('db/db')
+        c = conn.cursor()
+        c.execute(
+            "UPDATE utilisateurs SET etablissements_surveilles = ? WHERE id "
+            "= ?",
+            (etablissements, current_user.id))
+        conn.commit()
+        conn.close()
+
+        flash("La liste des établissements surveillés a été mise à jour.",
+              "success")
+        return redirect(url_for('edit_etablissements'))
+
+    conn = sqlite3.connect('db/db')
+    c = conn.cursor()
+    c.execute(
+        "SELECT etablissements_surveilles FROM utilisateurs WHERE id = ?",
+        (current_user.id,))
+    etablissements = c.fetchone()[0]
+    conn.close()
+
+    return render_template('edit_etablissements.html',
+                           etablissements=etablissements)
 
 
 @app.route('/logout')
