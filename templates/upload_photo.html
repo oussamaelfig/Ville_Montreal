@@ -1,11 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Téléverser une photo de profil</h1>
-    <form action="{{ url_for('upload_photo') }}" method="POST"
-          enctype="multipart/form-data">
-        <input type="file" name="photo" accept="image/jpeg, image/png"
-               required>
-        <input type="submit" value="Téléverser" class="btn btn-primary">
-    </form>
+    <div class="container">
+        <div class="jumbotron my-4">
+            <h1 class="mb-4">Téléverser une photo de profil</h1>
+            <form action="{{ url_for('upload_photo') }}" method="POST"
+                  enctype="multipart/form-data">
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" id="photo"
+                           name="photo" accept="image/jpeg, image/png"
+                           required>
+                    <label class="custom-file-label" for="photo">Choisir un
+                        fichier</label>
+                </div>
+                <input type="submit" value="Téléverser"
+                       class="btn btn-primary">
+            </form>
+        </div>
+    </div>
 {% endblock %}
