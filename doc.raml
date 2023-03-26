@@ -69,41 +69,41 @@ baseUri: http://localhost:5000/api
                 DOUBLE PIZZA,30
                 BUFFALO BILL WINGS,26
 
-/utilisateurs:
-  post:
-    description: Permettre à un utilisateur de se créer un profil d'utilisateur.
-    body:
-      application/json:
-        schema: |
-          {
-            "type": "object",
-            "properties": {
-              "nom_complet": {"type": "string"},
-              "email": {"type": "string", "format": "email"},
-              "etablissements_surveilles": {"type": "array", "items": {"type": "string"}},
-              "mot_de_passe": {"type": "string", "minLength": 8}
-            },
-            "required": ["nom_complet", "email", "mot_de_passe"]
-          }
-        example: |
-          {
-            "nom_complet": "Tyrell Wellick",
-            "email": "tyrell.wellick@example.com",
-            "etablissements_surveilles": ["Etablissement A", "Etablissement B"],
-            "mot_de_passe": "password123"
-          }
-    responses:
-      201:
-        body:
-          application/json:
-            example: |
-              {
-                "message": "Utilisateur créé avec succès"
-              }
-      400:
-        body:
-          application/json:
-            example: |
-              {
-                "erreur": "L'adresse e-mail est déjà utilisée"
-              }
+  /utilisateurs:
+    post:
+      description: Permettre à un utilisateur de se créer un profil d'utilisateur.
+      body:
+        application/json:
+          schema: |
+            {
+              "type": "object",
+              "properties": {
+                "nom_complet": {"type": "string"},
+                "email": {"type": "string", "format": "email"},
+                "etablissements_surveilles": {"type": "array", "items": {"type": "string"}},
+                "mot_de_passe": {"type": "string", "minLength": 8}
+              },
+              "required": ["nom_complet", "email", "mot_de_passe"]
+            }
+          example: |
+            {
+              "nom_complet": "Tyrell Wellick",
+              "email": "tyrell.wellick@example.com",
+              "etablissements_surveilles": ["Etablissement A", "Etablissement B"],
+              "mot_de_passe": "password123"
+            }
+      responses:
+        201:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Utilisateur créé avec succès"
+                }
+        400:
+          body:
+            application/json:
+              example: |
+                {
+                  "erreur": "L'adresse e-mail est déjà utilisée"
+                }

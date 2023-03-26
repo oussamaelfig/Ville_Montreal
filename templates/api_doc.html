@@ -4,11 +4,29 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="mb-4">Documentation de l'API Contraventions</h1>
+        <h1 class="mb-4">Documentation de l'API InspectionMTL</h1>
 
         <h2 class="mb-3">Endpoints</h2>
 
-        <div class="card mb-4">
+        <div class="list-group mb-4">
+            <a href="#contrevenants"
+               class="list-group-item list-group-item-action">GET
+                /api/contrevenants?du=date_debut&au=date_fin</a>
+            <a href="#infractions_json"
+               class="list-group-item list-group-item-action">GET
+                /api/infractions_par_etablissement_json</a>
+            <a href="#infractions_xml"
+               class="list-group-item list-group-item-action">GET
+                /api/infractions_par_etablissement_xml</a>
+            <a href="#infractions_csv"
+               class="list-group-item list-group-item-action">GET
+                /api/infractions_par_etablissement_csv</a>
+            <a href="#utilisateurs"
+               class="list-group-item list-group-item-action">POST
+                /api/utilisateurs</a>
+        </div>
+
+        <div id="contrevenants" class="card mb-4">
             <div class="card-header">
                 <code>GET /api/contrevenants?du=date_debut&au=date_fin</code>
             </div>
@@ -33,7 +51,112 @@
             </div>
         </div>
 
-        <!-- Ajoutez d'autres cartes pour les autres endpoints -->
+        <div id="infractions_json" class="card mb-4">
+            <div class="card-header">
+                <code>GET /api/infractions_par_etablissement_json</code>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Description</h4>
+                <p class="card-text">Permet d'obtenir la liste des
+                    établissements ayant commis une ou plusieurs infractions.
+                    Pour chaque établissement, on indique le nombre
+                    d'infractions connues. La liste est triée en ordre
+                    décroissant du nombre d'infractions en format JSON.</p>
+                <h4 class="card-title">Exemple de requête</h4>
+                <pre><code>GET /api/infractions_par_etablissement_json</code></pre>
+                <h4 class="card-title">Exemple de réponse</h4>
+                <pre><code>[
+    {
+        "etablissement": "RESTAURANT BASHA",
+        "nb_infractions": 33
+    },
+    {
+        "etablissement": "DOUBLE PIZZA",
+        "nb_infractions": 30
+    }
+]</code></pre>
+            </div>
+        </div>
 
+        <div id="infractions_xml" class="card mb-4">
+            <div class="card-header">
+                <code>GET /api/infractions_par_etablissement_xml</code>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Description</h4>
+                <p class="card-text">Permet d'obtenir d'obtenir la liste des
+                    établissements ayant commis une ou plusieurs infractions.
+                    Pour chaque établissement, on indique le nombre
+                    d'infractions connues. La liste est triée en ordre
+                    décroissant du nombre d'infractions en format XML
+                </p>
+                <h4 class="card-title">Exemple de requête</h4>
+                <pre><code>GET /api/infractions_par_etablissement_xml</code></pre>
+                <h4 class="card-title">Exemple de réponse</h4>
+                <pre><code><etablissements>
+                    <etablissement
+                            nb_infractions="33">RESTAURANT BASHA</etablissement>
+                    <etablissement
+                            nb_infractions="30">DOUBLE PIZZA</etablissement>
+                    <etablissement
+                            nb_infractions="26">BUFFALO BILL WINGS</etablissement>
+                </etablissements></code></pre>
+
+            </div>
+        </div>
+
+        <div id="infractions_csv" class="card mb-4">
+            <div class="card-header">
+                <code>GET /api/infractions_par_etablissement_csv</code>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Description</h4>
+                <p class="card-text">Permet d'obtenir d'obtenir la liste des
+                    établissements ayant commis une ou plusieurs infractions.
+                    Pour chaque établissement, on indique le nombre
+                    d'infractions connues. La liste est triée en ordre
+                    décroissant du nombre d'infractions en format CSV
+                </p>
+                <h4 class="card-title">Exemple de requête</h4>
+                <pre><code>GET /api/infractions_par_etablissement_csv</code></pre>
+                <h4 class="card-title">Exemple de réponse</h4>
+                <pre><code>Etablissement,Nombre d'infractions
+                RESTAURANT BASHA,33
+                DOUBLE PIZZA,30
+                BUFFALO BILL WINGS,26
+                </code></pre>
+
+            </div>
+        </div>
+
+        <div id="utilisateurs" class="card mb-4">
+            <div class="card-header">
+                <code>POST /api/utilisateurs</code>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Description</h4>
+                <p class="card-text">Permettre à un utilisateur de se créer un
+                    profil d'utilisateur.</p>
+                <h4 class="card-title">Exemple de requête</h4>
+                <pre><code>{
+    "nom_complet": "Tyrell Wellick",
+    "email": "tyrell.wellick@example.com",
+    "etablissements_surveilles": ["Etablissement A", "Etablissement B"],
+    "mot_de_passe": "password123"
+}</code></pre>
+                <h4 class="card-title">Exemples de réponses</h4>
+                <h5 class="mb-2">Réponse 201 - Utilisateur créé avec
+                    succès</h5>
+                <pre><code>{
+    "message": "Utilisateur créé avec succès"
+}</code></pre>
+                <h5 class="mb-2">Réponse 400 - L'adresse e-mail est déjà
+                    utilisée</h5>
+                <pre><code>{
+    "erreur": "L'adresse e-mail est déjà utilisée"
+}</code></pre>
+
+            </div>
+        </div>
     </div>
 {% endblock %}
