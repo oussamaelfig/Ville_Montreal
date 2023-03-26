@@ -1,107 +1,109 @@
 #%RAML 1.0
-title: Documentation
-mediaType: application/json
-types:
-  ExistingContrevenants:
-    properties:
-      adresse: 
-        type: string
-        required: true
-      business_id:
-        type: string
-        required: true
-      categorie:
-        type: string
-        required: true
-      date:
-        type: string
-        required: true 
-      date_jugement:
-        type: string
-        required: true
-      date_statut:
-        type: string
-        required: true
-      description: 
-        type: string
-        required: true
-      etablissement: 
-        type: string
-        required: true
-      id_poursuite:
-        type: string
-        required: true
-      montant: 
-        type: string
-        required: true
-      proprietaire:
-        type: string
-        required: true
-      statut: 
-        type: string
-        required: true
-      ville:
-        type: string
-        required: true
-
-  ExistingListEtablissement:
-    properties:
-      Etablissement: 
-        type: string
-        required: true
-      Nombre_Infraction:
-        type: string
-        required: true
+title: API Contraventions
+version: v1
+baseUri: http://localhost:5000/api
 
 /api:
   /contrevenants?du=date_debut&au=date_fin:
     get:
-      description: Permet d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates spécifiées en paramètre.
+      description: Permet d'obtenir la liste des contrevenants ayant commis au moin une infraction entre deux dates spécifiées en paramètre.
       responses:
         200:
           body:
             application/json:
-              type: ExistingContrevenants[]
-  /infractions/etablissements/json:
+              example: |
+                [
+                    {
+                        "etablissement": "786 HALAL RESTAURANT",
+                        "nb_contraventions": 1
+                    },
+                    {
+                        "etablissement": "8449 PROVIGO MONTREAL RACHEL",
+                        "nb_contraventions": 1
+                    },
+                ]
+
+  /infractions_par_etablissement_json:
     get:
       description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format JSON.
       responses:
         200:
           body:
             application/json:
-              type: ExistingListEtablissement[]
-  /infractions/etablissements/xml:
+              example: |
+                [
+                    {
+                        "etablissement": "RESTAURANT BASHA",
+                        "nb_infractions": 33
+                    },
+                    {
+                        "etablissement": "DOUBLE PIZZA",
+                        "nb_infractions": 30
+                    },
+                ]
+
+  /infractions_par_etablissement_xml:
     get:
       description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format XML
       responses:
         200:
           body:
-            application/xml:
+            application/json:
               example: |
-                <?xml version="1.0" encoding="UTF-8"?>
                 <etablissements>
-                  <etablissement>
-                    <nom>Etablissement 1</nom>
-                    <nbInfractions>10</nbInfractions>
-                  </etablissement>
-                  <etablissement>
-                    <nom>Etablissement 2</nom>
-                    <nbInfractions>5</nbInfractions>
-                  </etablissement>
+                    <etablissement nb_infractions="33">RESTAURANT BASHA</etablissement>
+                    <etablissement nb_infractions="30">DOUBLE PIZZA</etablissement>
+                    <etablissement nb_infractions="26">BUFFALO BILL WINGS</etablissement>
                 </etablissements>
-  /infractions/etablissements/csv:
-      get:
-        description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format CSV
-        responses:
-          200:
-            body:
-              text/csv:
-                example: |
-                  Etablissement,Nombre d'infractions
-                  McDonald's,25
-                  Burger King,20
-                  Wendy's,18
-                  KFC,15
-                  Subway,12
 
+  /infractions_par_etablissement_csv:
+    get:
+      description: Permet d'obtenir d'obtenir la liste des établissements ayant commis une ou plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste est triée en ordre décroissant du nombre d'infractions en format CSV
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                Etablissement,Nombre d'infractions
+                RESTAURANT BASHA,33
+                DOUBLE PIZZA,30
+                BUFFALO BILL WINGS,26
 
+/utilisateurs:
+  post:
+    description: Permettre à un utilisateur de se créer un profil d'utilisateur.
+    body:
+      application/json:
+        schema: |
+          {
+            "type": "object",
+            "properties": {
+              "nom_complet": {"type": "string"},
+              "email": {"type": "string", "format": "email"},
+              "etablissements_surveilles": {"type": "array", "items": {"type": "string"}},
+              "mot_de_passe": {"type": "string", "minLength": 8}
+            },
+            "required": ["nom_complet", "email", "mot_de_passe"]
+          }
+        example: |
+          {
+            "nom_complet": "Tyrell Wellick",
+            "email": "tyrell.wellick@example.com",
+            "etablissements_surveilles": ["Etablissement A", "Etablissement B"],
+            "mot_de_passe": "password123"
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Utilisateur créé avec succès"
+              }
+      400:
+        body:
+          application/json:
+            example: |
+              {
+                "erreur": "L'adresse e-mail est déjà utilisée"
+              }

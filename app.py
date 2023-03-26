@@ -156,14 +156,14 @@ def get_contrevenants_between_dates():
                     mimetype='application/json')
 
 
-@app.route('/doc')
-def doc():
+@app.route('/doc-api')
+def api_doc():
     with open('doc.raml', 'r') as f:
         raml = f.read()
-    return render_template('doc.html', raml=raml)
+    return render_template('api_doc.html', raml=raml)
 
 
-@app.route('/infractions')
+@app.route('/infractions_par_etablissement_json')
 def get_infractions():
     # Retrieve data from database
     conn = sqlite3.connect('db/db')
@@ -219,7 +219,7 @@ def get_infractions_by_establishment_xml():
         mimetype='application/xml')
 
 
-@app.route('/etablissements-infractions.csv')
+@app.route('/infractions_par_etablissement_csv')
 def get_etablissements_infractions_csv():
     # Retrieve data from database
     conn = sqlite3.connect('db/db')

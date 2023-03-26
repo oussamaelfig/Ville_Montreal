@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation de l'API{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Documentation de l'API Contraventions</h1>
+        <p class="lead">Cette page contient la documentation de l'API
+            Contraventions pour InspectionMTL.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="#get_etablissements"
+                   class="list-group-item list-group-item-action">GET
+                    /etablissements</a>
+                <a href="#get_infractions"
+                   class="list-group-item list-group-item-action">GET
+                    /infractions/{etablissement}</a>
+                <a href="#post_utilisateurs"
+                   class="list-group-item list-group-item-action">POST
+                    /utilisateurs</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <section id="get_etablissements">
+                <h2>GET /etablissements</h2>
+                <p>Obtenir la liste des établissements</p>
+                <h3>Response</h3>
+                <pre><code>[
+    "Etablissement A",
+    "Etablissement B"
+]</code></pre>
+            </section>
+            <hr>
+            <section id="get_infractions">
+                <h2>GET /infractions/{etablissement}</h2>
+                <p>Obtenir les infractions pour un établissement spécifique</p>
+                <h3>URI Parameters</h3>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>etablissement</td>
+                        <td>Nom de l'établissement</td>
+                        <td>string</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <h3>Response</h3>
+                <pre><code>[
+    {
+        "id": 1,
+        "date": "2020-05-01",
+        "proprietaire": "Jean Dupont",
+        "adresse": "123 rue des Lilas"
+    },
+    {
+        "id": 2,
+        "date": "2020-05-10",
+        "proprietaire": "Marie Durand",
+        "adresse": "456 rue des Roses"
+    }
+]</code></pre>
+            </section>
+            <hr>
+            <section id="post_utilisateurs">
+                <h2>POST /utilisateurs</h2>
+                <p>Créer un nouvel utilisateur</p>
+                <h3>Request Body</h3>
+                <pre><code>{
+    "nom_complet": "John Doe",
+    "email": "john.doe@example.com",
+    "etablissements_surveilles": ["Etablissement A", "Etablissement B"],
+    "mot_de_passe": "password123"
+}</code></pre>
+                <h3>Response</h3>
+                <h4>Status: 201 Created</h4>
+                <pre><code>{
+    "message": "Utilisateur créé avec succès.",
+    "id": 1234,
+    "nom_complet": "John Doe",
+    "email": "john.doe@example.com",
+    "etablissements_surveilles": ["Etablissement A", "Etablissement B"]
+}</code></pre>
+            </section>
+        </div>
+    </div>
+{% endblock %}
+
