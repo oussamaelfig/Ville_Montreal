@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 import yaml
 from apscheduler.schedulers.background import BackgroundScheduler
+import praw
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -98,7 +99,31 @@ def update_database():
 
     # If there are new contrevenants, send an email
     if new_contrevenants:
+        post_to_reddit(new_contrevenants)
         send_new_contrevenants_email(new_contrevenants, email_config)
+
+
+def post_to_reddit(new_contrevenants):
+    # Reddit's credentials and settings
+    reddit = praw.Reddit(
+        client_id="MkTFCzX5gCNmGsfbdSc4JQ",
+        client_secret="haBic3DYNDxVGIl23eydW7udm5e66g",
+        user_agent="inspectionmtl/0.1 (by u/elfiDev)",
+        username="elfiDev",
+        password="Admin@2023",
+    )
+
+    # Create the post content
+    post_title = "Nouveaux contrevenants"
+    post_content = "Liste des nouveaux contrevenants :\n\n"
+    for contrevenant in new_contrevenants:
+        post_content += f"- {contrevenant}\n"
+
+    # Publish the post on a specific subreddit link :
+    # https://old.reddit.com/r/inspectionMTL/comments/122744c
+    # /rinspectionmtl_lounge/?ref=share&ref_source=link
+    subreddit = reddit.subreddit("r/inspectionMTL")
+    subreddit.submit(post_title, selftext=post_content)
 
 
 # Schedule the update_database function to run every day
