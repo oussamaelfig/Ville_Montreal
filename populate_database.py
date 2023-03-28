@@ -1,12 +1,12 @@
 import csv
 import requests
 import sqlite3
-import smtplib
-from email.mime.text import MIMEText
 from datetime import datetime
 import yaml
 from apscheduler.schedulers.background import BackgroundScheduler
 import praw
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -18,20 +18,24 @@ def send_new_contrevenants_email(new_contrevenants, email_config):
     for contrevenant in new_contrevenants:
         email_content += f"- {contrevenant}\n"
 
-    msg = MIMEText(email_content)
-    msg["Subject"] = "Nouveaux contrevenants"
-    msg["From"] = email_config["from_email"]
-    msg["To"] = email_config["to_email"]
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = email_config['sendinblue_api_key']
+
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration))
+
+    send_email = sib_api_v3_sdk.SendSmtpEmail(
+        subject="Nouveaux contrevenants",
+        html_content=email_content,
+        sender={"name": "Votre nom", "email": email_config["from_email"]},
+        to=[{"email": email_config["to_email"]}]
+    )
 
     try:
-        with smtplib.SMTP_SSL(email_config["smtp_server"],
-                              email_config["smtp_port"]) as server:
-            server.login(email_config["from_email"],
-                         email_config["email_password"])
-            server.send_message(msg)
-            print(
-                f"Email sent to {email_config['to_email']} at {datetime.now()}")
-    except Exception as e:
+        api_response = api_instance.send_transac_email(send_email)
+        print(
+            f"Email sent to {email_config['to_email']} at {datetime.now()}, Message ID: {api_response.message_id}")
+    except ApiException as e:
         print(f"Failed to send email: {e}")
 
 

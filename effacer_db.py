@@ -1,7 +1,7 @@
-import sqlite3
+import psycopg2
 
 # Connect to the database
-conn = sqlite3.connect('db/db')
+conn = psycopg2.connect('db/db')
 c = conn.cursor()
 
 # Clear all the data in the table
