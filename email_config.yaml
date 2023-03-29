@@ -3,4 +3,4 @@ smtp_port: 465
 email_password: "Admin@2023"
 from_email: "elfidev2123@gmail.com"
 to_email: "elfidev2123@gmail.com"
-sendinblue_api_key: "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"
+sendinblue_api_key: "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"

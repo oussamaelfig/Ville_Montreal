@@ -1,25 +1,15 @@
 import csv
 import requests
+import sqlite3
 from datetime import datetime
 import yaml
 from apscheduler.schedulers.background import BackgroundScheduler
 import praw
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
-import psycopg2
 
 scheduler = BackgroundScheduler()
 scheduler.start()
-
-
-def create_connection():
-    return psycopg2.connect(
-        dbname="db",
-        user="postgres",
-        password="Admin@2023",
-        host="localhost",
-        port="5432"
-    )
 
 
 def send_new_contrevenants_email(new_contrevenants, email_config):
@@ -62,7 +52,7 @@ def update_database():
     poursuites = csv.DictReader(response.content.decode('utf-8').splitlines())
 
     # Connect to the database
-    conn = create_connection()
+    conn = sqlite3.connect('db/db')
     c = conn.cursor()
 
     # Retrieve all existing ids
@@ -91,11 +81,10 @@ def update_database():
 
             # Insert new record
             c.execute(
-                "INSERT INTO public.poursuite (id_poursuite, buisness_id, "
-                "date,"
+                "INSERT INTO poursuite (id_poursuite, buisness_id, date, "
                 "description, adresse, date_jugement, etablissement, "
                 "montant, proprietaire, ville, statut, date_statut,"
-                " categorie) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                " categorie) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (id_poursuite, business_id, date, description, adresse,
                  date_jugement, etablissement, montant, proprietaire,
                  ville, statut, date_statut, categorie))
