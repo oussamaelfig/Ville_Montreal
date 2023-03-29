@@ -3,13 +3,13 @@ import datetime
 from flask import Flask, render_template, request, jsonify, Response, redirect, \
     flash, url_for
 from xml.etree.ElementTree import Element, SubElement, tostring
-import sqlite3
 import hashlib
 from jsonschema import validate, ValidationError
 from jsonschema.exceptions import SchemaError
 from flask_login import LoginManager, login_user, logout_user, login_required, \
     current_user
 from werkzeug.utils import secure_filename
+import psycopg2
 
 app = Flask(__name__)
 app.secret_key = 'mP01FxJ0fV0bwQq0nXdlPx0kVxryWBoK'
@@ -20,6 +20,21 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
+
+
+def create_connection():
+    try:
+        conn = psycopg2.connect(
+            dbname="db",
+            user="postgres",
+            password="Admin@2023",
+            host="localhost",
+            port="5432"
+        )
+        return conn
+    except psycopg2.Error as e:
+        print(f"Erreur lors de la connexion à la base de données : {e}")
+        return None
 
 
 def allowed_file(filename):
@@ -55,9 +70,9 @@ class User:
 # données
 @login_manager.user_loader
 def load_user(user_id):
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM utilisateurs WHERE id = ?", (user_id,))
+    c.execute("SELECT * FROM utilisateurs WHERE id = %s", (user_id,))
     user_data = c.fetchone()
     conn.close()
 
@@ -95,18 +110,18 @@ def search():
         return render_template('home.html', errors=errors)
 
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
     query = "SELECT * FROM poursuite WHERE "
     params = []
     if etablissement:
-        query += "etablissement LIKE ? AND "
+        query += "etablissement LIKE %s AND "
         params.append('%' + etablissement + '%')
     if proprietaire:
-        query += "proprietaire LIKE ? AND "
+        query += "proprietaire LIKE %s AND "
         params.append('%' + proprietaire + '%')
     if rue:
-        query += "adresse LIKE ? AND "
+        query += "adresse LIKE %s AND "
         params.append('%' + rue + '%')
     query = query[:-5]  # Remove the last "AND"
     c.execute(query, params)
@@ -134,10 +149,10 @@ def get_contrevenants_between_dates():
                      'YYYY-MM-DD'}), 400
 
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
     query = """SELECT etablissement, COUNT(*) as nb_contraventions
-        FROM poursuite WHERE date >= ? AND date <= ?
+        FROM poursuite WHERE (date >= %s AND date <= %s)
         GROUP BY etablissement"""
     params = [start_date, end_date]
     c.execute(query, params)
@@ -166,7 +181,7 @@ def api_doc():
 @app.route('/infractions_par_etablissement_json')
 def get_infractions():
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
     query = """
         SELECT etablissement, COUNT(*) AS nb_infractions
@@ -193,7 +208,7 @@ def get_infractions():
 
 @app.route('/infractions_par_etablissement_xml')
 def get_infractions_by_establishment_xml():
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
 
     query = '''
@@ -222,7 +237,7 @@ def get_infractions_by_establishment_xml():
 @app.route('/infractions_par_etablissement_csv')
 def get_etablissements_infractions_csv():
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
     query = '''
         SELECT etablissement, COUNT(*) as nb_infractions
@@ -254,7 +269,7 @@ def contrevenants_liste():
 
 @app.route('/api/etablissements')
 def api_etablissements():
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
     c.execute(
         "SELECT DISTINCT etablissement FROM poursuite ORDER BY etablissement")
@@ -265,9 +280,9 @@ def api_etablissements():
 
 @app.route('/api/infractions/<etablissement>')
 def api_infractions(etablissement):
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM poursuite WHERE etablissement = ?",
+    c.execute("SELECT * FROM poursuite WHERE etablissement = %s",
               (etablissement,))
     results = c.fetchall()
     conn.close()
@@ -298,11 +313,23 @@ def creer_utilisateur():
             request.json['mot_de_passe'].encode('utf-8')).hexdigest()
 
         # Insérer l'utilisateur dans la base de données
-        conn = sqlite3.connect('db/db')
+        conn = create_connection()
         c = conn.cursor()
+
+        # Vérifier si l'email existe déjà dans la base de données
+        c.execute("SELECT * FROM utilisateurs WHERE email = %s",
+                  (request.json['email'],))
+        existing_user = c.fetchone()
+        print(f"Utilisateur existant : {existing_user}")
+
+        if existing_user is not None:
+            return jsonify(
+                {"erreur": "L'adresse e-mail est déjà utilisée"}), 400
+
+        # Si l'email n'existe pas, insérer l'utilisateur
         c.execute("""
             INSERT INTO utilisateurs (nom_complet, email, etablissements_surveilles, mot_de_passe)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
         """, (request.json['nom_complet'], request.json['email'],
               json.dumps(request.json.get('etablissements_surveilles', [])),
               mot_de_passe_hashe))
@@ -316,8 +343,13 @@ def creer_utilisateur():
         return jsonify({"erreur": str(e)}), 400
     except SchemaError as e:
         return jsonify({"erreur": str(e)}), 400
-    except sqlite3.IntegrityError as e:
-        return jsonify({"erreur": "L'adresse e-mail est déjà utilisée"}), 400
+    except psycopg2.IntegrityError as e:
+        conn.rollback()
+        if 'email' in str(e):
+            return jsonify(
+                {"erreur": "L'adresse e-mail est déjà utilisée"}), 400
+        else:
+            return jsonify({"erreur": f"Erreur d'intégrité : {str(e)}"}), 400
     except Exception as e:
         return jsonify({"erreur": str(e)}), 500
 
@@ -333,9 +365,9 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        conn = sqlite3.connect('db/db')
+        conn = create_connection()
         c = conn.cursor()
-        c.execute("SELECT * FROM utilisateurs WHERE email = ?", (email,))
+        c.execute("SELECT * FROM utilisateurs WHERE email = %s", (email,))
         user_data = c.fetchone()
         conn.close()
 
@@ -360,11 +392,11 @@ def edit_etablissements():
     if request.method == 'POST':
         etablissements = request.form.get('etablissements')
 
-        conn = sqlite3.connect('db/db')
+        conn = create_connection()
         c = conn.cursor()
         c.execute(
-            "UPDATE utilisateurs SET etablissements_surveilles = ? WHERE id "
-            "= ?",
+            "UPDATE utilisateurs SET etablissements_surveilles = %s WHERE id "
+            "= %s",
             (etablissements, current_user.id))
         conn.commit()
         conn.close()
@@ -373,10 +405,10 @@ def edit_etablissements():
               "success")
         return redirect(url_for('edit_etablissements'))
 
-    conn = sqlite3.connect('db/db')
+    conn = create_connection()
     c = conn.cursor()
     c.execute(
-        "SELECT etablissements_surveilles FROM utilisateurs WHERE id = ?",
+        "SELECT etablissements_surveilles FROM utilisateurs WHERE id = %s",
         (current_user.id,))
     etablissements = c.fetchone()[0]
     conn.close()
@@ -406,10 +438,10 @@ def upload_photo():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_content = file.read()
-            conn = sqlite3.connect('db/db')
+            conn = create_connection()
             c = conn.cursor()
             c.execute(
-                "UPDATE utilisateurs SET photo_de_profil = ? WHERE id = ?",
+                "UPDATE utilisateurs SET photo_de_profil = %s WHERE id = %s",
                 (file_content, current_user.id))
             conn.commit()
             conn.close()

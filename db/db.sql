@@ -18,10 +18,10 @@ CREATE TABLE poursuite
 
 CREATE TABLE utilisateurs
 (
-    id                        INTEGER PRIMARY KEY,
+    id                        SERIAL PRIMARY KEY,
     nom_complet               TEXT        NOT NULL,
     email                     TEXT UNIQUE NOT NULL,
     etablissements_surveilles TEXT,
     mot_de_passe              TEXT        NOT NULL,
-    photo_de_profil           BLOB
+    photo_de_profil           BYTEA
 );
