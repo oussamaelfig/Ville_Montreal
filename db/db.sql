@@ -23,5 +23,17 @@ CREATE TABLE utilisateurs
     email                     TEXT UNIQUE NOT NULL,
     etablissements_surveilles TEXT,
     mot_de_passe              TEXT        NOT NULL,
-    photo_de_profil           BYTEA
+    photo_de_profil           BLOB
 );
+
+CREATE TABLE plaintes
+(
+    id                   INTEGER PRIMARY KEY,
+    nom_etablissement    TEXT NOT NULL,
+    adresse              TEXT NOT NULL,
+    ville                TEXT NOT NULL,
+    date_visite          DATE NOT NULL,
+    nom_client           TEXT NOT NULL,
+    description_probleme TEXT NOT NULL
+);
+
