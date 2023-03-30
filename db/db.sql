@@ -18,7 +18,7 @@ CREATE TABLE poursuite
 
 CREATE TABLE utilisateurs
 (
-    id                        SERIAL PRIMARY KEY,
+    id                        INTEGER PRIMARY KEY,
     nom_complet               TEXT        NOT NULL,
     email                     TEXT UNIQUE NOT NULL,
     etablissements_surveilles TEXT,
