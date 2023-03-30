@@ -21,6 +21,32 @@ login_manager.login_view = 'login'
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
 
+plainte_schema = {
+    "type": "object",
+    "properties": {
+        "nom_etablissement": {"type": "string"},
+        "adresse": {"type": "string"},
+        "ville": {"type": "string"},
+        "date_visite": {"type": "string", "format": "date"},
+        "nom_client": {"type": "string"},
+        "description_probleme": {"type": "string"}
+    },
+    "required": ["nom_etablissement", "adresse", "ville", "date_visite",
+                 "nom_client", "description_probleme"]
+}
+
+user_schema = {
+    "type": "object",
+    "properties": {
+        "nom_complet": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "etablissements_surveilles": {"type": "array",
+                                      "items": {"type": "string"}},
+        "mot_de_passe": {"type": "string", "minLength": 8}
+    },
+    "required": ["nom_complet", "email", "mot_de_passe"]
+}
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[
@@ -276,22 +302,9 @@ def api_infractions(etablissement):
 
 @app.route('/api/utilisateurs', methods=['POST'])
 def creer_utilisateur():
-    # JSON Schema pour valider le document JSON reçu
-    schema = {
-        "type": "object",
-        "properties": {
-            "nom_complet": {"type": "string"},
-            "email": {"type": "string", "format": "email"},
-            "etablissements_surveilles": {"type": "array",
-                                          "items": {"type": "string"}},
-            "mot_de_passe": {"type": "string", "minLength": 8}
-        },
-        "required": ["nom_complet", "email", "mot_de_passe"]
-    }
-
     try:
         # Valider le JSON reçu
-        validate(instance=request.json, schema=schema)
+        validate(instance=request.json, schema=user_schema)
 
         # Hasher le mot de passe
         mot_de_passe_hashe = hashlib.sha256(
@@ -353,6 +366,7 @@ def login():
 
 
 @app.route('/edit_etablissements', methods=['GET', 'POST'])
+@login_required
 def edit_etablissements():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
@@ -419,6 +433,36 @@ def upload_photo():
             flash('Format de fichier non autorisé', 'danger')
             return redirect(request.url)
     return render_template('upload_photo.html')
+
+
+@app.route('/api/plaintes', methods=['POST'])
+def ajouter_plainte():
+    try:
+        validate(instance=request.json, schema=plainte_schema)
+
+        conn = sqlite3.connect('db/db')
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO plaintes (nom_etablissement, adresse, ville, date_visite, nom_client, description_probleme)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (request.json['nom_etablissement'], request.json['adresse'],
+              request.json['ville'], request.json['date_visite'],
+              request.json['nom_client'],
+              request.json['description_probleme']))
+        conn.commit()
+        conn.close()
+
+        return jsonify({"message": "Plainte ajoutée avec succès"}), 201
+
+    except ValidationError as e:
+        return jsonify({"erreur": str(e)}), 400
+    except Exception as e:
+        return jsonify({"erreur": str(e)}), 500
+
+
+@app.route('/depot-plainte')
+def depot_plainte():
+    return render_template('plainte.html')
 
 
 if __name__ == '__main__':

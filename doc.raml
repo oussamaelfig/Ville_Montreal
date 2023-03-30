@@ -107,3 +107,45 @@ baseUri: http://localhost:5000/api
                 {
                   "erreur": "L'adresse e-mail est déjà utilisée"
                 }
+  /inspection:
+    post:
+      description: Permet de faire une demande d'inspection à la ville pour un établissement.
+      body:
+        application/json:
+          schema: |
+            {
+              "type": "object",
+              "properties": {
+                "nom_etablissement": {"type": "string"},
+                "adresse": {"type": "string"},
+                "ville": {"type": "string"},
+                "date_visite": {"type": "string", "format": "date"},
+                "nom_client": {"type": "string"},
+                "description_probleme": {"type": "string"}
+              },
+              "required": ["nom_etablissement", "adresse", "ville", "date_visite", "nom_client", "description_probleme"]
+            }
+          example: |
+            {
+              "nom_etablissement": "Restaurant BASHA",
+              "adresse": "123 Rue Principale",
+              "ville": "Montréal",
+              "date_visite": "2023-03-29",
+              "nom_client": "Oussama Elfigha",
+              "description_probleme": "J'ai trouvé des insectes dans mon plat."
+            }
+      responses:
+        201:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Demande d'inspection soumise avec succès"
+                }
+        400:
+          body:
+            application/json:
+              example: |
+                {
+                  "erreur": "Les données fournies sont invalides"
+                }

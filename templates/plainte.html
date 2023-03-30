@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Déposer une plainte{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mt-4">Déposer une plainte</h1>
+            <form id="plainte-form">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nom_etablissement">Nom de
+                            l'établissement:</label>
+                        <input type="text" class="form-control"
+                               id="nom_etablissement" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="nom_client">Nom du client:</label>
+                        <input type="text" class="form-control" id="nom_client"
+                               required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="adresse">Adresse:</label>
+                        <input type="text" class="form-control" id="adresse"
+                               required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="ville">Ville:</label>
+                        <input type="text" class="form-control" id="ville"
+                               required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="date_visite">Date de visite:</label>
+                    <input type="date" class="form-control" id="date_visite"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="description_probleme">Description du
+                        problème:</label>
+                    <textarea class="form-control" id="description_probleme"
+                              rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="button" id="submit-plainte"
+                            class="btn btn-primary">Soumettre la plainte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/submitPlainte.js') }}"></script>
+{% endblock %}

@@ -24,6 +24,9 @@
             <a href="#utilisateurs"
                class="list-group-item list-group-item-action">POST
                 /api/utilisateurs</a>
+            <a href="#inspection"
+               class="list-group-item list-group-item-action">POST
+                /api/inspection</a>
         </div>
 
         <div id="contrevenants" class="card mb-4">
@@ -156,6 +159,36 @@
     "erreur": "L'adresse e-mail est déjà utilisée"
 }</code></pre>
 
+            </div>
+        </div>
+        <div id="inspection" class="card mb-4">
+            <div class="card-header">
+                <code>POST /api/inspection</code>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Description</h4>
+                <p class="card-text">Permet de faire une demande d'inspection à
+                    la ville pour un établissement.</p>
+                <h4 class="card-title">Exemple de requête</h4>
+                <pre><code>{
+                    "nom_etablissement": "Restaurant BASHA",
+                    "adresse": "123 Rue Principale",
+                    "ville": "Montréal",
+                    "date_visite": "2023-03-29",
+                    "nom_client": "Oussama Elfigha",
+                    "description_probleme": "J'ai trouvé des insectes dans mon plat."
+}</code></pre>
+                <h4 class="card-title">Exemples de réponses</h4>
+                <h5 class="mb-2">Réponse 201 - Demande d'inspection soumise
+                    avec succès</h5>
+                <pre><code>{
+    "message": "Demande d'inspection soumise avec succès"
+}</code></pre>
+                <h5 class="mb-2">Réponse 400 - Les données fournies sont
+                    invalides</h5>
+                <pre><code>{
+    "erreur": "Les données fournies sont invalides"
+}</code></pre>
             </div>
         </div>
     </div>
