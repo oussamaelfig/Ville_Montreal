@@ -48,7 +48,7 @@ baseUri: http://localhost:5000/api
       responses:
         200:
           body:
-            application/json:
+            application/xml; charset=utf-8:
               example: |
                 <etablissements>
                     <etablissement nb_infractions="33">RESTAURANT BASHA</etablissement>
@@ -62,7 +62,7 @@ baseUri: http://localhost:5000/api
       responses:
         200:
           body:
-            application/json:
+            text/csv; charset=utf-8:
               example: |
                 Etablissement,Nombre d'infractions
                 RESTAURANT BASHA,33

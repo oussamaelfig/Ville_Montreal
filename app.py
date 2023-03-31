@@ -1,7 +1,8 @@
 import json
 import datetime
+import chardet
 from flask import Flask, render_template, request, jsonify, Response, redirect, \
-    flash, url_for
+    flash, url_for, Response
 from xml.etree.ElementTree import Element, SubElement, tostring
 import sqlite3
 import hashlib
@@ -182,13 +183,6 @@ def get_contrevenants_between_dates():
                     mimetype='application/json')
 
 
-@app.route('/doc-api')
-def api_doc():
-    with open('doc.raml', 'r') as f:
-        raml = f.read()
-    return render_template('api_doc.html', raml=raml)
-
-
 @app.route('/infractions_par_etablissement_json')
 def get_infractions():
     # Retrieve data from database
@@ -366,7 +360,6 @@ def login():
 
 
 @app.route('/edit_etablissements', methods=['GET', 'POST'])
-@login_required
 def edit_etablissements():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
@@ -463,6 +456,11 @@ def ajouter_plainte():
 @app.route('/depot-plainte')
 def depot_plainte():
     return render_template('plainte.html')
+
+
+@app.route('/api-doc')
+def api_doc():
+    return render_template('api_doc.html')
 
 
 if __name__ == '__main__':
