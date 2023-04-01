@@ -1,6 +1,5 @@
 import json
 import datetime
-import chardet
 from flask import Flask, render_template, request, jsonify, Response, redirect, \
     flash, url_for, Response
 from xml.etree.ElementTree import Element, SubElement, tostring
