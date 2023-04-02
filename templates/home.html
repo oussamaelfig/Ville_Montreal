@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
 
 {% block title %}Home{% endblock %}
-
+{% block css %}
+    <style>
+        body {
+            background-image: url('https://res.cloudinary.com/villemontreal/image/upload/q_auto,f_auto,dpr_auto/v1570212188/portail/background/texture-large-undeground.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div id="carouselExampleSlidesOnly" class="carousel slide"
          data-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="d-block w-100"
-                     src="static/Images/VilleMontrealImage.svg"
+                <img class="d-block w-100 carousel-image"
+                     src="static/Images/logoMTL.png"
                      alt="First slide">
             </div>
         </div>

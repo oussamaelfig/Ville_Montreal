@@ -10,8 +10,9 @@
           href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet"
           href="{{ url_for('static', filename='CSS/style.css') }}">
+    {% block css %}{% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="/">InspectionMTL</a>
@@ -70,7 +71,7 @@
     {% block content %}{% endblock %}
 </div>
 <!-- Footer -->
-<footer class="bg-dark text-center text-white mt-4">
+<footer class="bg-dark text-center text-white mt-auto">
     <div class="container p-3">
         <p>&copy; 2023 InspectionMTL. Tous droits réservés..</p>
     </div>

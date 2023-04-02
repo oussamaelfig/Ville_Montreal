@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
-
+{% block title %}Photo de profile{% endblock %}
+{% block css %}
+    <style>
+        body {
+            background-image: url('https://res.cloudinary.com/villemontreal/image/upload/q_auto,f_auto,dpr_auto/v1570212188/portail/background/texture-large-undeground.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="container">
         <div class="jumbotron my-4">

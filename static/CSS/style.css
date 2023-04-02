@@ -2,6 +2,12 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.carousel-image {
+    max-height: 100px;
+    object-fit: contain;
+    width: auto;
+}
+
 .jumbotron {
     background-color: #f8f9fa;
     border-radius: 5px;
