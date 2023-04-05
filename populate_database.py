@@ -7,6 +7,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import praw
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -52,7 +55,7 @@ def update_database():
     poursuites = csv.DictReader(response.content.decode('utf-8').splitlines())
 
     # Connect to the database
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
 
     # Retrieve all existing ids

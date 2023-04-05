@@ -10,6 +10,12 @@ from jsonschema.exceptions import SchemaError
 from flask_login import LoginManager, login_user, logout_user, login_required, \
     current_user
 from werkzeug.utils import secure_filename
+import os
+
+# Obtenez le chemin du répertoire contenant le fichier app.py ou flask_app.py
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
 
 app = Flask(__name__)
 app.secret_key = 'mP01FxJ0fV0bwQq0nXdlPx0kVxryWBoK'
@@ -81,7 +87,7 @@ class User:
 # données
 @login_manager.user_loader
 def load_user(user_id):
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     c.execute("SELECT * FROM utilisateurs WHERE id = ?", (user_id,))
     user_data = c.fetchone()
@@ -121,7 +127,7 @@ def search():
         return render_template('home.html', errors=errors)
 
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = "SELECT * FROM poursuite WHERE "
     params = []
@@ -160,7 +166,7 @@ def get_contrevenants_between_dates():
                      'YYYY-MM-DD'}), 400
 
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = """SELECT etablissement, COUNT(*) as nb_contraventions
         FROM poursuite WHERE date >= ? AND date <= ?
@@ -185,7 +191,7 @@ def get_contrevenants_between_dates():
 @app.route('/infractions_par_etablissement_json')
 def get_infractions():
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = """
         SELECT etablissement, COUNT(*) AS nb_infractions
@@ -212,7 +218,7 @@ def get_infractions():
 
 @app.route('/infractions_par_etablissement_xml')
 def get_infractions_by_establishment_xml():
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
 
     query = '''
@@ -241,7 +247,7 @@ def get_infractions_by_establishment_xml():
 @app.route('/infractions_par_etablissement_csv')
 def get_etablissements_infractions_csv():
     # Retrieve data from database
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = '''
         SELECT etablissement, COUNT(*) as nb_infractions
@@ -273,7 +279,7 @@ def contrevenants_liste():
 
 @app.route('/api/etablissements')
 def api_etablissements():
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     c.execute(
         "SELECT DISTINCT etablissement FROM poursuite ORDER BY etablissement")
@@ -284,7 +290,7 @@ def api_etablissements():
 
 @app.route('/api/infractions/<etablissement>')
 def api_infractions(etablissement):
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     c.execute("SELECT * FROM poursuite WHERE etablissement = ?",
               (etablissement,))
@@ -304,7 +310,7 @@ def creer_utilisateur():
             request.json['mot_de_passe'].encode('utf-8')).hexdigest()
 
         # Insérer l'utilisateur dans la base de données
-        conn = sqlite3.connect('db/db')
+        conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
         c = conn.cursor()
         c.execute("""
             INSERT INTO utilisateurs (nom_complet, email, etablissements_surveilles, mot_de_passe)
@@ -339,7 +345,7 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        conn = sqlite3.connect('db/db')
+        conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
         c = conn.cursor()
         c.execute("SELECT * FROM utilisateurs WHERE email = ?", (email,))
         user_data = c.fetchone()
@@ -366,7 +372,7 @@ def edit_etablissements():
     if request.method == 'POST':
         etablissements = request.form.get('etablissements')
 
-        conn = sqlite3.connect('db/db')
+        conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
         c = conn.cursor()
         c.execute(
             "UPDATE utilisateurs SET etablissements_surveilles = ? WHERE id "
@@ -379,7 +385,7 @@ def edit_etablissements():
               "success")
         return redirect(url_for('edit_etablissements'))
 
-    conn = sqlite3.connect('db/db')
+    conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     c.execute(
         "SELECT etablissements_surveilles FROM utilisateurs WHERE id = ?",
@@ -412,7 +418,7 @@ def upload_photo():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_content = file.read()
-            conn = sqlite3.connect('db/db')
+            conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
             c = conn.cursor()
             c.execute(
                 "UPDATE utilisateurs SET photo_de_profil = ? WHERE id = ?",
@@ -432,7 +438,7 @@ def ajouter_plainte():
     try:
         validate(instance=request.json, schema=plainte_schema)
 
-        conn = sqlite3.connect('db/db')
+        conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
         c = conn.cursor()
         c.execute("""
             INSERT INTO plaintes (nom_etablissement, adresse, ville, date_visite, nom_client, description_probleme)
