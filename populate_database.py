@@ -37,7 +37,8 @@ def send_new_contrevenants_email(new_contrevenants, email_config):
     try:
         api_response = api_instance.send_transac_email(send_email)
         print(
-            f"Email sent to {email_config['to_email']} at {datetime.now()}, Message ID: {api_response.message_id}")
+            f"Email sent to {email_config['to_email']} at {datetime.now()}, "
+            f"Message ID: {api_response.message_id}")
     except ApiException as e:
         print(f"Failed to send email: {e}")
 

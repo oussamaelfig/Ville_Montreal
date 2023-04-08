@@ -49,20 +49,22 @@
             <button type="submit" class="btn btn-primary">Rechercher</button>
         </form>
     </div>
-
-    <div class="row mb-3">
-        <div class="col-sm-6">
-            <input type="date" id="start_date" class="form-control"
-                   placeholder="Date de début">
+    <div>
+        <div class="row mb-3">
+            <div class="col-sm-6">
+                <input type="date" id="start_date" class="form-control"
+                       placeholder="Date de début">
+            </div>
+            <div class="col-sm-6">
+                <input type="date" id="end_date" class="form-control"
+                       placeholder="Date de fin">
+            </div>
         </div>
-        <div class="col-sm-6">
-            <input type="date" id="end_date" class="form-control"
-                   placeholder="Date de fin">
+        <div class="text-center">
+            <button id="search_btn" class="btn btn-primary">Rechercher</button>
+            <br>
         </div>
+        <div id="results"></div>
+        <br>
     </div>
-    <div class="text-center">
-        <button id="search_btn" class="btn btn-primary">Rechercher</button>
-    </div>
-    <div id="results"></div>
-
 {% endblock %}

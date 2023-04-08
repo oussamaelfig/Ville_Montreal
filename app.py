@@ -1,29 +1,28 @@
-import json
 import datetime
-from flask import Flask, render_template, request, jsonify, Response, redirect, \
-    flash, url_for, Response
-from xml.etree.ElementTree import Element, SubElement, tostring
-import sqlite3
 import hashlib
+import json
+import os
+import sqlite3
+from xml.etree.ElementTree import Element, SubElement, tostring
+from flask import Flask, render_template, request, jsonify, redirect, \
+    flash, url_for, Response
+from flask_login import LoginManager, login_user, logout_user, \
+    login_required, current_user
 from jsonschema import validate, ValidationError
 from jsonschema.exceptions import SchemaError
-from flask_login import LoginManager, login_user, logout_user, login_required, \
-    current_user
 from werkzeug.utils import secure_filename
-import os
 
-# Obtenez le chemin du répertoire contenant le fichier app.py ou flask_app.py
+# Obtenir le chemin du répertoire contenant le fichier app.py
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.secret_key = 'mP01FxJ0fV0bwQq0nXdlPx0kVxryWBoK'
 
-# Ajoutez ces lignes après la création de l'objet app
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-ALLOWED_EXTENSIONS = {'jpg', 'png'}
+EXTENSIONS_IMAGES = {'jpg', 'png'}
 
 plainte_schema = {
     "type": "object",
@@ -54,10 +53,10 @@ user_schema = {
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[
-        1].lower() in ALLOWED_EXTENSIONS
+        1].lower() in EXTENSIONS_IMAGES
 
 
-# Créez une classe pour représenter l'utilisateur
+# Classe pour représenter l'utilisateur
 class User:
     def __init__(self, id, nom_complet, email, etablissements_surveilles,
                  mot_de_passe, photo_de_profil=None):
@@ -81,8 +80,7 @@ class User:
         return str(self.id)
 
 
-# Ajoutez cette fonction pour charger un utilisateur à partir de la base de
-# données
+# Fonction pour charger un utilisateur à partir de la base de données
 @login_manager.user_loader
 def load_user(user_id):
     conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
@@ -104,12 +102,11 @@ def home():
 
 @app.route('/search', methods=['POST'])
 def search():
-    # Retrieve form data
     etablissement = request.form.get('etablissement')
     proprietaire = request.form.get('proprietaire')
     rue = request.form.get('rue')
 
-    # Validate form data
+    # Valider les donnees du formulaire
     errors = []
     if len(etablissement) > 100:
         errors.append(
@@ -124,7 +121,6 @@ def search():
     if errors:
         return render_template('home.html', errors=errors)
 
-    # Retrieve data from database
     conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = "SELECT * FROM poursuite WHERE "
@@ -143,18 +139,17 @@ def search():
     results = c.fetchall()
     conn.close()
 
-    # Display search results
+    # Afficher les resultats de recherches
     return render_template('results.html', results=results,
                            num_results=len(results))
 
 
 @app.route('/contrevenants')
 def get_contrevenants_between_dates():
-    # Retrieve query parameters
     start_date = request.args.get('du')
     end_date = request.args.get('au')
 
-    # Validate date format
+    # Valider le format de la date
     try:
         datetime.datetime.strptime(start_date, '%Y-%m-%d')
         datetime.datetime.strptime(end_date, '%Y-%m-%d')
@@ -163,7 +158,6 @@ def get_contrevenants_between_dates():
             'error': 'Format de date invalide. Utilisez le format ISO 8601 : '
                      'YYYY-MM-DD'}), 400
 
-    # Retrieve data from database
     conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = """SELECT etablissement, COUNT(*) as nb_contraventions
@@ -174,7 +168,7 @@ def get_contrevenants_between_dates():
     results = c.fetchall()
     conn.close()
 
-    # Return results in JSON format
+    # Retourner le resultat sous format JSON
     contrevenants = []
     for row in results:
         contrev = {
@@ -188,7 +182,6 @@ def get_contrevenants_between_dates():
 
 @app.route('/infractions_par_etablissement_json')
 def get_infractions():
-    # Retrieve data from database
     conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = """
@@ -201,7 +194,7 @@ def get_infractions():
     results = c.fetchall()
     conn.close()
 
-    # Transform data into JSON format
+    # Transformer les donnees en format JSON
     infractions = []
     for row in results:
         infraction = {
@@ -229,7 +222,7 @@ def get_infractions_by_establishment_xml():
     results = c.fetchall()
     conn.close()
 
-    # Build XML response
+    # Build la reponse XML
     root = Element('etablissements')
     for row in results:
         etablissement = SubElement(root, 'etablissement',
@@ -244,7 +237,6 @@ def get_infractions_by_establishment_xml():
 
 @app.route('/infractions_par_etablissement_csv')
 def get_etablissements_infractions_csv():
-    # Retrieve data from database
     conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
     query = '''
@@ -257,12 +249,12 @@ def get_etablissements_infractions_csv():
     results = c.fetchall()
     conn.close()
 
-    # Generate CSV file
+    # generer le fichier CSV
     output = "Etablissement,Nombre d'infractions\n"
     for row in results:
         output += f"{row[0]},{row[1]}\n"
 
-    # Return CSV response
+    # Retourner la reponse CSV
     response = Response(output, mimetype='text/csv')
     response.headers[
         "Content-Disposition"] = "attachment; filename=etablissements" \
@@ -414,7 +406,7 @@ def upload_photo():
             flash('Aucun fichier n\'a été sélectionné', 'danger')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            secure_filename(file.filename)
             file_content = file.read()
             conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
             c = conn.cursor()
