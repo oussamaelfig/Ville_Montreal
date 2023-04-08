@@ -15,8 +15,6 @@ import os
 # Obtenez le chemin du répertoire contenant le fichier app.py ou flask_app.py
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
-
 app = Flask(__name__)
 app.secret_key = 'mP01FxJ0fV0bwQq0nXdlPx0kVxryWBoK'
 
