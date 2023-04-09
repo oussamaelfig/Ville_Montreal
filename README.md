@@ -1,8 +1,4 @@
----
-
----
-
-# INF5190-A21 - Projet de session (InspectionMTL)
+# INF5190-H23 - Projet de session (InspectionMTL)
 
 ![Version](https://img.shields.io/badge/version-hiver2023-success?style=flat)
 ![License](https://img.shields.io/badge/license-Apache2.0-green?style=flat)
@@ -16,6 +12,8 @@
 
 
 ## **📝 Titre et description du projet**
+
+### InspectionMTL
 
 Le projet consiste à récupérer un ensemble de données provenant de la ville de Montréal et d'offrir des services à partir de ces données. Il s'agit de données ouvertes à propos d'établissements ayant reçu des constats d'infraction lors d'inspections alimentaires.
 
