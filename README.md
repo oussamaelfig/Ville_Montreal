@@ -27,6 +27,90 @@ Le projet consiste à récupérer un ensemble de données provenant de la ville 
 
 ## **🎯 Fonctionnalités**
 
+#### A1
+
+**Script de téléchargement et d'insertion des données**: Un script Python qui télécharge les données des contraventions au format CSV à partir d'une URL spécifique et les insère dans une base de données SQLite.
+
+
+
+#### A2
+
+**Application Flask avec recherche de contraventions**: Permet de rechercher des contraventions par nom d'établissement, propriétaire et rue. Les résultats de la recherche s'affichent sur une nouvelle page, avec toutes les informations disponibles sur chaque contravention.
+
+
+
+#### A3
+
+**BackgroundScheduler pour la mise à jour des données**: Un BackgroundScheduler extrait les données de la ville de Montréal chaque jour à minuit et met à jour la base de données.
+
+
+
+#### A4
+
+**API REST pour obtenir la liste des contraventions entre deux dates**: Un service REST qui renvoie la liste des contraventions émises entre deux dates spécifiées en paramètre au format JSON. Une route `/doc` affiche la représentation HTML de la documentation RAML du service web.
+
+
+
+#### A5
+
+**Recherche rapide de contraventions entre deux dates**: Un formulaire sur la page d'accueil permet de rechercher rapidement des contraventions entre deux dates. Les résultats sont affichés dans un tableau avec le nom de l'établissement et le nombre de contraventions obtenues durant la période.
+
+
+
+#### A6
+
+**Recherche par nom de restaurant**: Un mode de recherche permet de sélectionner un restaurant dans une liste déroulante et d'afficher les informations sur ses différentes infractions.
+
+
+
+#### B1
+
+**Envoi de nouvelles contraventions par courriel**: Le système détecte les nouvelles contraventions depuis la dernière importation de données, en dresse une liste sans doublon et l'envoi par courriel automatiquement.
+
+
+
+#### B2
+
+**Publication automatique sur Reddit**: Les noms d'établissement des nouvelles contraventions sont publiés automatiquement sur un subreddit avec un compte Reddit.
+
+
+
+#### C1
+
+**API REST pour obtenir la liste des établissements ayant commis des infractions**: Un service REST qui renvoie la liste des établissements ayant commis une ou plusieurs infractions, triée par ordre décroissant du nombre d'infractions. Le service est documenté avec RAML sur `/doc`.
+
+
+
+#### C2
+
+**Service pour obtenir les données au format XML**: Un service qui renvoie les mêmes données que le point C1 au format XML avec un encodage UTF-8. Le service est documenté avec RAML sur `/doc`.
+
+
+
+#### C3
+
+**Service pour obtenir les données au format CSV**: Un service qui renvoie les mêmes données que le point C1 au format CSV avec un encodage UTF-8. Le service est documenté avec RAML sur `/doc`.
+
+
+
+#### D1
+
+**Service REST pour faire une demande d'inspection à la ville**: Un service REST qui permet de soumettre une demande d'inspection avec des informations spécifiques. Le document JSON est validé avec json-schema et le service est documenté avec RAML sur `/doc`. Une page de plainte est également disponible pour soumettre une demande d'inspection via un formulaire web.
+
+
+
+#### E1
+
+**Service REST pour créer un profil d'utilisateur**: Un service REST qui permet de créer un profil d'utilisateur avec des informations spécifiques. Le document JSON est validé avec json-schema et le service est documenté avec RAML sur `/doc`.
+
+
+
+#### E2
+
+**Page web d'authentification et de gestion du profil**: Une page web permet d'invoquer le service de création de profil d'utilisateur et propose une option d'authentification.
+
+
+
 
 
 ## :cyclone: Clone du projet
