@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -136,7 +137,16 @@ def search():
         params.append('%' + rue + '%')
     query = query[:-5]  # Remove the last "AND"
     c.execute(query, params)
-    results = c.fetchall()
+    results = [
+        (
+            r[0], r[1], datetime.strptime(r[2], "%Y%m%d").strftime("%Y-%m-%d"),
+            r[3], r[4], datetime.strptime(r[5], "%Y%m%d").strftime("%Y-%m-%d"),
+            r[6], r[7], r[8], r[9], r[10],
+            datetime.strptime(r[11], "%Y%m%d").strftime("%Y-%m-%d"), r[12]
+        )
+        for r in c.fetchall()
+    ]
+
     conn.close()
 
     # Afficher les resultats de recherches
