@@ -7,6 +7,14 @@
             background-size: cover;
             background-position: center;
         }
+
+        .date-col {
+            min-width: 120px;
+        }
+
+        .desc-col {
+            min-width: 300px;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -20,16 +28,16 @@
                     <tr>
                         <th scope="col">ID Poursuite</th>
                         <th scope="col">Buisness ID</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Description</th>
+                        <th scope="col" class="date-col">Date</th>
+                        <th scope="col" class="desc-col">Description</th>
                         <th scope="col">Adresse</th>
-                        <th scope="col">Date Jugement</th>
+                        <th scope="col" class="date-col">Date Jugement</th>
                         <th scope="col">Etablissement</th>
                         <th scope="col">Montant en CAD</th>
                         <th scope="col">Proprietaire</th>
                         <th scope="col">Ville</th>
                         <th scope="col">Statut</th>
-                        <th scope="col">Date statut</th>
+                        <th scope="col" class="date-col">Date statut</th>
                         <th scope="col">Categorie</th>
                     </tr>
                     </thead>
