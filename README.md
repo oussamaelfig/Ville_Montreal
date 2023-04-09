@@ -245,7 +245,7 @@ Maintenant, votre environnement virtuel est prêt et vous pouvez commencer à d�
 
 ## 📄**Documentation de l'API**
 
-Toute la documentation des services REST sera disponible à la route `/api-doc`.
+Toute la documentation des services REST sera disponible à la route `/doc`.
 
 ## 🚀 Déploiement sur PyhtonAnyWhere
 

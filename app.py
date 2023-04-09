@@ -453,9 +453,9 @@ def depot_plainte():
     return render_template('plainte.html')
 
 
-@app.route('/api-doc')
+@app.route('/doc')
 def api_doc():
-    return render_template('api_doc.html')
+    return render_template('doc.html')
 
 
 if __name__ == '__main__':
