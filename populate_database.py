@@ -4,6 +4,7 @@ import sqlite3
 from datetime import datetime
 import yaml
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 import praw
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
@@ -44,29 +45,29 @@ def send_new_contrevenants_email(new_contrevenants, email_config):
 
 
 def update_database():
-    # Load email configuration from YAML file
+    # Chargement de la configuration du courrier
+    # électronique à partir d'un fichier YAML
     with open("email_config.yaml", 'r') as stream:
         email_config = yaml.safe_load(stream)
 
-    # Download the data from the URL
+    # Télécharger les données à partir de l'URL
     url = 'https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv'
     response = requests.get(url)
 
-    # Parse the CSV data
+    # Analyse des données CSV
     poursuites = csv.DictReader(response.content.decode('utf-8').splitlines())
 
-    # Connect to the database
     conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
     c = conn.cursor()
 
-    # Retrieve all existing ids
+    # Récupérer tous les identifiants existants
     c.execute("SELECT id_poursuite FROM poursuite")
     existing_ids = set(row[0] for row in c.fetchall())
 
-    # Track new contrevenants
+    # Suivre les nouveaux contrevenants
     new_contrevenants = set()
 
-    # Insert the new data into the table
+    # Insérer les nouvelles données dans le tableau
     for poursuite in poursuites:
         id_poursuite = int(poursuite['id_poursuite'])
         if id_poursuite not in existing_ids:
@@ -83,7 +84,7 @@ def update_database():
             date_statut = poursuite['date_statut']
             categorie = poursuite['categorie']
 
-            # Insert new record
+            # Insérer un nouvel enregistrement
             c.execute(
                 "INSERT INTO poursuite (id_poursuite, buisness_id, date, "
                 "description, adresse, date_jugement, etablissement, "
@@ -93,26 +94,26 @@ def update_database():
                  date_jugement, etablissement, montant, proprietaire,
                  ville, statut, date_statut, categorie))
 
-            # Add the new contrevenant to the set
+            # Ajouter le nouveau contrevenant à l'ensemble
             new_contrevenants.add(etablissement)
 
-            # Update existing_ids
+            # Mise à jour des Ids existants
             existing_ids.add(id_poursuite)
 
-    # Commit changes to the database
+    # Validation des modifications dans la base de données
     conn.commit()
 
-    # Close the database connection
+    # Fermer la connexion à la base de données
     conn.close()
 
-    # If there are new contrevenants, send an email
+    # S'il y a de nouveaux contrevenants, envoyez un courriel
     if new_contrevenants:
         post_to_reddit(new_contrevenants)
         send_new_contrevenants_email(new_contrevenants, email_config)
 
 
 def post_to_reddit(new_contrevenants):
-    # Reddit's credentials and settings
+    # Identifiants et paramètres de Reddit
     reddit = praw.Reddit(
         client_id="MkTFCzX5gCNmGsfbdSc4JQ",
         client_secret="haBic3DYNDxVGIl23eydW7udm5e66g",
@@ -121,21 +122,22 @@ def post_to_reddit(new_contrevenants):
         password="Admin@2023",
     )
 
-    # Create the post content
+    # Créer le contenu de l'article
     post_title = "Nouveaux contrevenants"
     post_content = "Liste des nouveaux contrevenants :\n\n"
     for contrevenant in new_contrevenants:
         post_content += f"- {contrevenant}\n"
 
-    # Publish the post on a specific subreddit link :
+    # Publier le message sur le lien d'un subreddit spécifique :
     # https://old.reddit.com/r/inspectionMTL/comments/122744c
     # /rinspectionmtl_lounge/?ref=share&ref_source=link
     subreddit = reddit.subreddit("r/inspectionMTL")
     subreddit.submit(post_title, selftext=post_content)
 
 
-# Schedule the update_database function to run every day
-scheduler.add_job(update_database, 'interval', days=1)
+# Programmation de la fonction update_database pour qu'elle s'exécute tous
+# les jours à minuit
+scheduler.add_job(update_database, CronTrigger(hour=0, minute=0))
 
-# Run the update_database function immediately
+# Exécuter immédiatement la fonction update_database
 update_database()
