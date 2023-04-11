@@ -1,3 +1,7 @@
+# ELFO74030209
+# OUSSAMA EL-FIGHA
+# el-figha.oussama@courrier.uqam.ca
+
 import datetime
 from datetime import datetime
 import hashlib
