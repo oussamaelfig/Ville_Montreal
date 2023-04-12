@@ -2,7 +2,6 @@
 # OUSSAMA EL-FIGHA
 # el-figha.oussama@courrier.uqam.ca
 
-import datetime
 from datetime import datetime
 import hashlib
 import json
@@ -165,8 +164,8 @@ def get_contrevenants_between_dates():
 
     # Valider le format de la date
     try:
-        datetime.datetime.strptime(start_date, '%Y-%m-%d')
-        datetime.datetime.strptime(end_date, '%Y-%m-%d')
+        datetime.strptime(start_date, '%Y-%m-%d')
+        datetime.strptime(end_date, '%Y-%m-%d')
     except ValueError:
         return jsonify({
             'error': 'Format de date invalide. Utilisez le format ISO 8601 : '
