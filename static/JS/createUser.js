@@ -30,7 +30,7 @@
                     window.location.href = '/';
                 },
                 error: function (response) {
-                    alert("Erreur lors de la création de l'utilisateur : " + response.responseJSON.erreur);
+                    alert("Erreur lors de la création de l'utilisateur : " + response.responseJSON.erreur);// a corriger
                 }
             });
         });
