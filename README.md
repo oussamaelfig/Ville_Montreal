@@ -158,8 +158,7 @@ projet sur votre ordinateur.
 Pour installer et exécuter cette application Flask, vous aurez besoin de :
 
 - Python 3.9 ou version ultérieure
-- Flask et ses dépendances :
-- 
+- Flask et ses dépendances
 
 ## :wrench: Installation
 
@@ -286,8 +285,6 @@ L'API est aussi disponible
 sur [pythonanywhere](http://elfiDev.pythonanywhere.com/).
 Cliquez sur le lien pour accéder au site.
 Veuillez noter que la version de déploiement n'est pas faite pour le test.
-
-
 
 ### 📜 Autres informations
 
