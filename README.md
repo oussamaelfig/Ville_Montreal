@@ -113,10 +113,13 @@ pour soumettre une demande d'inspection via un formulaire web.
 
 #### E1
 
-**Service REST pour créer un profil d'utilisateur**: Une page web permet
+**Service REST pour créer un profil d'utilisateur** : Une page web permet
 d'invoquer le service de création de profil d'utilisateur et propose une option
 d'authentification. Une fois connecte il redirige vers une page permettant de
-modifier la liste des noms d’établissements à surveiller.
+modifier la liste des noms d’établissements à surveiller. Vous pouvez aussi
+téléverser une photo de profil en allant dans la page **Téléverser une photo de
+profil**. A la fin vous pouvez vous deconecter en cliquant sur **Se déconnecter
+**.
 
 #### E2
 
