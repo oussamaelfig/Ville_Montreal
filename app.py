@@ -226,8 +226,7 @@ def get_infractions_by_establishment_xml():
     c = conn.cursor()
 
     query = '''
-        SELECT etablissement, COUNT(*) AS nb_infractions 
-        FROM poursuite
+        SELECT etablissement, COUNT(*) AS nb_infractions FROM poursuite
         GROUP BY etablissement
         ORDER BY nb_infractions DESC
     '''
@@ -316,7 +315,8 @@ def creer_utilisateur():
         conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
         c = conn.cursor()
         c.execute("""
-            INSERT INTO utilisateurs (nom_complet, email, etablissements_surveilles, mot_de_passe)
+            INSERT INTO utilisateurs (nom_complet, email,
+             etablissements_surveilles, mot_de_passe)
             VALUES (?, ?, ?, ?)
         """, (request.json['nom_complet'], request.json['email'],
               json.dumps(request.json.get('etablissements_surveilles', [])),
@@ -331,7 +331,7 @@ def creer_utilisateur():
         return jsonify({"erreur": str(e)}), 400
     except SchemaError as e:
         return jsonify({"erreur": str(e)}), 400
-    except sqlite3.IntegrityError as e:
+    except sqlite3.IntegrityError:
         return jsonify({"erreur": "L'adresse e-mail est déjà utilisée"}), 400
     except Exception as e:
         return jsonify({"erreur": str(e)}), 500
@@ -444,7 +444,8 @@ def ajouter_plainte():
         conn = sqlite3.connect(os.path.join(basedir, 'db/db'))
         c = conn.cursor()
         c.execute("""
-            INSERT INTO plaintes (nom_etablissement, adresse, ville, date_visite, nom_client, description_probleme)
+            INSERT INTO plaintes (nom_etablissement, adresse, ville,
+            date_visite, nom_client, description_probleme)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (request.json['nom_etablissement'], request.json['adresse'],
               request.json['ville'], request.json['date_visite'],
