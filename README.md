@@ -113,10 +113,10 @@ pour soumettre une demande d'inspection via un formulaire web.
 
 #### E1
 
-**Service REST pour créer un profil d'utilisateur**: Un service REST qui permet
-de créer un profil d'utilisateur avec des informations spécifiques. Le document
-JSON est validé avec json-schema et le service est documenté avec RAML
-sur `/doc`.
+**Service REST pour créer un profil d'utilisateur**: Une page web permet
+d'invoquer le service de création de profil d'utilisateur et propose une option
+d'authentification. Une fois connecte il redirige vers une page permettant de
+modifier la liste des noms d’établissements à surveiller.
 
 #### E2
 
@@ -170,11 +170,11 @@ Pour installer et exécuter cette application Flask, vous aurez besoin de :
 
 3. Assurez-vous d'avoir Python 3 installé sur votre machine en exécutant la
    commande suivante :
-   
+
    ```bash
    python3 --version
    ```
-   
+
    Si vous n'avez pas Python 3 installé, vous pouvez le télécharger à partir du
    site
    officiel : [Download Python | Python.org](https://www.python.org/downloads/)
@@ -182,48 +182,48 @@ Pour installer et exécuter cette application Flask, vous aurez besoin de :
 4. Installez le package `virtualenv` si vous ne l'avez pas déjà. Cela vous
    permettra de créer des environnements virtuels. Exécutez la commande
    suivante :
-   
+
    ```bash
    pip install virtualenv
    ```
-   
+
    ou
-   
+
    ```bash
    pip3 install virtualenv
    ```
 
 5. Créez un nouvel environnement virtuel dans le répertoire de votre projet.
    Exécutez la commande suivante :
-   
+
    ```bash
    python -m venv venv
    ```
-   
+
    ou
-   
+
    ```bash
    python3 -m venv venv
    ```
-   
+
    Cela créera un nouvel environnement virtuel appelé "**venv**" dans votre
    dossier de projet.
 
 6. Activez l'environnement virtuel. La méthode d'activation varie en fonction
    du système d'exploitation :
-   
-   - Sur Windows :
-     
-     ```powershell
-     venv\Scripts\activate
-     ```
-   
-   - Sur macOS et Linux :
-     
-     ```bash
-     source venv/bin/activate
-     ```
-   
+
+    - Sur Windows :
+
+      ```powershell
+      venv\Scripts\activate
+      ```
+
+    - Sur macOS et Linux :
+
+      ```bash
+      source venv/bin/activate
+      ```
+
    Une fois l'environnement virtuel activé, votre invite de commande devrait
    indiquer le nom de l'environnement virtuel, par exemple `(venv)`.
 
@@ -248,21 +248,21 @@ commande `deactivate`.
 2. Définissez la variable d'environnement `FLASK_APP` pour indiquer à Flask le
    fichier qui contient votre application. Le fichier principal de mon
    application Flask est nommé `app.py`.
-   
-   * Sur Windows :
-     
-     ```powershell
-     set FLASK_APP=app.py
-     ```
-   
-   * Sur macOS et Linux :
-     
-     ```bash
-     export FLASK_APP=app.py
-     ```
+
+    * Sur Windows :
+
+      ```powershell
+      set FLASK_APP=app.py
+      ```
+
+    * Sur macOS et Linux :
+
+      ```bash
+      export FLASK_APP=app.py
+      ```
 
 3. Enfin, démarrez votre application Flask en exécutant la commande suivante :
-   
+
    ```bash
    flask run
    ```
@@ -288,9 +288,14 @@ Veuillez noter que la version de déploiement n'est pas faite pour le test.
 
 ### 📜 Autres informations
 
-En plus des tâches principales de ce projet, j'ai ajouté deux scripts supplémentaires pour faciliter la maintenance et les tests :
+En plus des tâches principales de ce projet, j'ai ajouté deux scripts
+supplémentaires pour faciliter la maintenance et les tests :
 
-- `effacer_db.py` : un script pour effacer les données dans mes tables de base de données.
-- `testEmail.py` : un script pour tester l'envoi de courriels aux destinataires.
+- `effacer_db.py` : un script pour effacer les données dans mes tables de base
+  de données.
+- `testEmail.py` : un script pour tester l'envoi de courriels aux
+  destinataires.
 
-Ces scripts sont conçus pour améliorer l'efficacité et la fiabilité de ce projet, en fournissant des outils supplémentaires pour la maintenance et les tests.
+Ces scripts sont conçus pour améliorer l'efficacité et la fiabilité de ce
+projet, en fournissant des outils supplémentaires pour la maintenance et les
+tests.
