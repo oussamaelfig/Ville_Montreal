@@ -1,4 +1,4 @@
-# INF5190-H23 - Projet de session (InspectionMTL)
+# InspectionMTL
 
 ![Version](https://img.shields.io/badge/version-hiver2023-success?style=flat)
 ![License](https://img.shields.io/badge/license-Apache2.0-green?style=flat)
@@ -11,9 +11,7 @@
 
 #### Auteur : OUSSAMA EL-FIGHA
 
-#### Code permanent : ELFO74030209
-
-#### Courriel : el-figha.oussama@courriel.uqam.ca
+#### Courriel : oelfigha2002@gmail.com
 
 ## **📝 Titre et description du projet**
 
@@ -29,7 +27,6 @@ inspections alimentaires.
 - Les icônes, images et gifs ont été prises du site: https://montreal.ca/
 - Les données ont été prise
   de : https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv
-- Jacques Berger
 
 ## **🎯 Fonctionnalités**
 
